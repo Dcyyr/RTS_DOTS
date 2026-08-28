@@ -18,8 +18,6 @@ public class UnitMoverAuthoring : MonoBehaviour
                 m_RotateSpeed = authoring.m_RotateSpeed,
                 m_TargetPosition = authoring.transform.position
             });
-                
-
             
         }
     }

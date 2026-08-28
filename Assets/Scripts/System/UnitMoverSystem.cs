@@ -32,6 +32,8 @@ public partial struct UnitMoverJob : IJobEntity
         if (math.lengthsq(moveDirection) < 0.01f)
         {
             physicsVelocity.Linear = float3.zero;
+            physicsVelocity.Angular = float3.zero;
+
             return;
         }
 

@@ -1,0 +1,30 @@
+using Unity.Burst;
+using Unity.Entities;
+using Unity.Transforms;
+
+partial struct SelectedVisualSystem : ISystem
+{
+
+    [BurstCompile]
+    public void OnUpdate(ref SystemState state)
+    {
+        
+
+        foreach(RefRO<Selected> selected in SystemAPI.Query<RefRO<Selected>>().WithDisabled<Selected>())
+        {
+            RefRW<LocalTransform> visualLocalTransform =  SystemAPI.GetComponentRW<LocalTransform>(selected.ValueRO.m_SelectedEntity);
+            visualLocalTransform.ValueRW.Scale = 0;
+
+        }
+
+
+        foreach (RefRO<Selected> selected in SystemAPI.Query<RefRO<Selected>>())
+        {
+            RefRW<LocalTransform> visualLocalTransform = SystemAPI.GetComponentRW<LocalTransform>(selected.ValueRO.m_SelectedEntity);
+            visualLocalTransform.ValueRW.Scale = selected.ValueRO.m_Scale;
+
+        }
+    }
+
+  
+}
