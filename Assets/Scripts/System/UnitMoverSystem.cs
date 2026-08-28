@@ -1,32 +1,43 @@
+using Unity.Burst;
 using Unity.Entities;
-using Unity.Transforms;
 using Unity.Mathematics;
 using Unity.Physics;
+using Unity.Transforms;
 
 partial struct UnitMoverSystem : ISystem
 {
     public void OnUpdate(ref SystemState state)
     {
-        foreach ((RefRW<LocalTransform> localTransform,
-            RefRO<UnitMover> unitMover,
-            RefRW<PhysicsVelocity> physicsVelocity)
-            in SystemAPI.Query<RefRW<LocalTransform>,
-            RefRO<UnitMover>,
-            RefRW<PhysicsVelocity>>())
+        UnitMoverJob unitMoverJob = new UnitMoverJob
         {
-            float3 moveDirection = unitMover.ValueRO.m_TargetPosition - localTransform.ValueRO.Position;
+            delteTime = SystemAPI.Time.DeltaTime
+        };
 
-            // 防止目标点等于当前位置时 normalize(0) 产生 NaN
-            if (math.lengthsq(moveDirection) < 0.01f)
-            {
-                physicsVelocity.ValueRW.Linear = float3.zero;
-                continue;
-            }
+        unitMoverJob.ScheduleParallel();
+    }
+}
 
-            moveDirection = math.normalize(moveDirection);
-            localTransform.ValueRW.Rotation = math.slerp(localTransform.ValueRO.Rotation, quaternion.LookRotation(moveDirection, math.up()),SystemAPI.Time.DeltaTime * unitMover.ValueRO.m_RotateSpeed);
-            physicsVelocity.ValueRW.Linear = moveDirection * unitMover.ValueRO.m_MoveSpeed;
-            physicsVelocity.ValueRW.Angular = float3.zero;
+// 多线程版本
+[BurstCompile]
+public partial struct UnitMoverJob : IJobEntity
+{
+    public float delteTime;
+
+    //ref可以写入，in只能读
+    public void Execute(ref LocalTransform localTransform, in UnitMover unitMover, ref PhysicsVelocity physicsVelocity)
+    {
+        float3 moveDirection = unitMover.m_TargetPosition - localTransform.Position;
+
+        // 防止目标点等于当前位置时 normalize(0) 产生 NaN
+        if (math.lengthsq(moveDirection) < 0.01f)
+        {
+            physicsVelocity.Linear = float3.zero;
+            return;
         }
+
+        moveDirection = math.normalize(moveDirection);
+        localTransform.Rotation = math.slerp(localTransform.Rotation, quaternion.LookRotation(moveDirection, math.up()), delteTime * unitMover.m_RotateSpeed);
+        physicsVelocity.Linear = moveDirection * unitMover.m_MoveSpeed;
+        physicsVelocity.Angular = float3.zero;
     }
 }
