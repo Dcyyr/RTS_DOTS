@@ -12,8 +12,8 @@ public class UnitSelectionManagerUI : MonoBehaviour
 
     private void Start()
     {
-        UnitSelectionManager.Instance.OnSelectionAreaStart += OnSelectionAreaStart;
-        UnitSelectionManager.Instance.OnSelectionAreaEnd += OnSelectionAreaEnd;
+        UnitSelectionManager.Instance.OnMouseSelectionAreaStart += OnSelectionAreaStart;
+        UnitSelectionManager.Instance.OnMouseSelectionAreaEnd += OnSelectionAreaEnd;
 
         m_SelectionAreaRectTransform.gameObject.SetActive(false);
 
