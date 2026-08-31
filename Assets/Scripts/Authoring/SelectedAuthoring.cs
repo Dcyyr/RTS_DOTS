@@ -1,4 +1,4 @@
-using Unity.Entities;
+﻿using Unity.Entities;
 using UnityEngine;
 
 public class SelectedAuthoring : MonoBehaviour
@@ -14,22 +14,25 @@ public class SelectedAuthoring : MonoBehaviour
 
             AddComponent(entity, new Selected
             {
-                //��gameobjectת��Ϊentity
+                // 把 gameobject 转换为 entity
                 m_SelectedEntity = GetEntity(authoring.m_SelectedGameObject, TransformUsageFlags.Dynamic),
                 m_Scale = authoring.m_Scale
 
             });
+
+            // 出生时默认未选中
+            SetComponentEnabled<Selected>(entity, false);
         }
     }
 }
 
 
-public struct Selected : IComponentData,IEnableableComponent
+public struct Selected : IComponentData, IEnableableComponent
 {
     public Entity m_SelectedEntity;
     public float m_Scale;
 
+    public bool m_OnSelected;
+    public bool m_OnDeselected;
+
 }
-
-
-

@@ -4,6 +4,7 @@ using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Physics;
 using Unity.Transforms;
+using UnityEditor.UI;
 using UnityEngine;
 
 public class UnitSelectionManager : MonoBehaviour
@@ -32,16 +33,21 @@ public class UnitSelectionManager : MonoBehaviour
             Vector2 mouseEndPos = Input.mousePosition;
            
 
-            EntityManager entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
+            EntityManager entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;//拿默认ECS世界的入口（SubScene 实体都在这）
             EntityQuery entityQuery = new EntityQueryBuilder(Allocator.Temp)//快速构建查询（Temp = 临时分配，用完自动释放）
                 .WithAll<Selected>().Build(entityManager);//// 查所有已启用Selected的实体,WithAll只匹配Selected已启用的实体
 
             NativeArray<Entity> entityArray = entityQuery.ToEntityArray(Allocator.Temp);
+            NativeArray<Selected> selectedArray = entityQuery.ToComponentDataArray<Selected>(Allocator.Temp);
             for (int i = 0; i < entityArray.Length; i++)
             {
                 entityManager.SetComponentEnabled<Selected>(entityArray[i], false);// 全部取消选中
-            }
 
+                Selected selected = selectedArray[i];
+                selected.m_OnDeselected = true;
+                entityManager.SetComponentData(entityArray[i],selected);
+
+            }
 
             Rect selectionAreaRect = GetSelectionAreaRect();
             float selectionAreaSize = selectionAreaRect.width * selectionAreaRect.height;
@@ -67,6 +73,11 @@ public class UnitSelectionManager : MonoBehaviour
                     {
                         //单位在选择的区域内
                         entityManager.SetComponentEnabled<Selected>(entityArray[i], true);
+
+                        Selected selected = entityManager.GetComponentData<Selected>(entityArray[i]);
+
+                        selected.m_OnSelected = true;
+                        entityManager.SetComponentData(entityArray[i], selected);
                     }
                 }
             }
@@ -79,7 +90,6 @@ public class UnitSelectionManager : MonoBehaviour
                 CollisionWorld collisionWorld = physicsWorldSingleton.CollisionWorld;
                 UnityEngine.Ray cameraRay = Camera.main.ScreenPointToRay(Input.mousePosition);
 
-                int unitLayer = 6;
                 RaycastInput raycastInput = new RaycastInput
                 {
                     Start = cameraRay.GetPoint(0f),
@@ -88,7 +98,7 @@ public class UnitSelectionManager : MonoBehaviour
                     Filter = new CollisionFilter
                     {
                         BelongsTo = ~0u,
-                        CollidesWith = 1u << unitLayer,
+                        CollidesWith = 1u << GameAssets.UNITS_LAYER,
                         GroupIndex = 0
 
                     }
@@ -96,9 +106,14 @@ public class UnitSelectionManager : MonoBehaviour
 
                 if (collisionWorld.CastRay(raycastInput, out Unity.Physics.RaycastHit raycastHit))
                 {
-                    if (entityManager.HasComponent<Unit>(raycastHit.Entity))
+                    if (entityManager.HasComponent<Unit>(raycastHit.Entity) && entityManager.HasComponent<Selected>(raycastHit.Entity))
                     {   //选中单位
                         entityManager.SetComponentEnabled<Selected>(raycastHit.Entity, true);
+
+
+                        Selected selected = entityManager.GetComponentData<Selected>(raycastHit.Entity);
+                        selected.m_OnSelected = true;
+                        entityManager.SetComponentData(raycastHit.Entity, selected);
                     }
                 }
             }
@@ -114,7 +129,7 @@ public class UnitSelectionManager : MonoBehaviour
             Vector3 mousePosition = MouseWorldPosition.Instance.GetPosition();//鼠标世界坐标
 
 
-            EntityManager entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;//拿默认 ECS 世界的入口（SubScene 实体都在这）
+            EntityManager entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
             EntityQuery entityQuery = new EntityQueryBuilder(Allocator.Temp).WithAll<UnitMover, Selected>().Build(entityManager);//只查"被选中"的单位
 
             NativeArray<Entity> entityArray = entityQuery.ToEntityArray(Allocator.Temp);
