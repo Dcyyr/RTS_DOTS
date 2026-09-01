@@ -25,17 +25,30 @@ partial struct BulletMoverSystem : ISystem
                 continue;
             }
 
-            LocalTransform targetLocalTransform = SystemAPI.GetComponent<LocalTransform>(target.ValueRO.m_TargetEntity);
+            
 
-            float3 moveDirection = targetLocalTransform.Position - localTransform.ValueRO.Position;
+            LocalTransform targetLocalTransform = SystemAPI.GetComponent<LocalTransform>(target.ValueRO.m_TargetEntity);
+            ShootVictim shootVictim = SystemAPI.GetComponent<ShootVictim>(target.ValueRO.m_TargetEntity);
+            float3 targetPosition = targetLocalTransform.TransformPoint(shootVictim.m_HitPosition);
+
+
+            float distanceBeforeSq = math.distancesq(localTransform.ValueRO.Position, targetPosition);
+
+            float3 moveDirection = targetPosition - localTransform.ValueRO.Position;
             moveDirection = math.normalize(moveDirection);
 
             localTransform.ValueRW.Position += moveDirection * bullet.ValueRO.m_Speed * SystemAPI.Time.DeltaTime;
 
+            float distanceAfterSq = math.distancesq(localTransform.ValueRO.Position, targetPosition);
+
+            if(distanceAfterSq > distanceBeforeSq)
+            {   //子弹速度过快而不能正确的命中敌人
+                localTransform.ValueRW.Position = targetPosition;
+            }
 
             float destroyDistance = 0.15f;
             // distancesq 是距离的平方，要和 destroyDistance 的平方比较
-            if(math.distancesq(localTransform.ValueRO.Position,targetLocalTransform.Position) < destroyDistance * destroyDistance)
+            if(math.distancesq(localTransform.ValueRO.Position, targetPosition) < destroyDistance * destroyDistance)
             {
 
                 RefRW<Health> targetHealth = SystemAPI.GetComponentRW<Health>(target.ValueRO.m_TargetEntity);
