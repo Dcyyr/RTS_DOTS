@@ -1,4 +1,4 @@
-using Unity.Burst;
+﻿using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Physics;
@@ -26,7 +26,7 @@ partial struct FindTagetSystem : ISystem
                 GroupIndex = 0
             };
 
-            //���Ҽ��������Ҫÿһ֡��Ѱ��
+            // 搜索计时，不需要每一帧都寻找
             findTarget.ValueRW.m_Timer -= SystemAPI.Time.DeltaTime;
 
             if (findTarget.ValueRW.m_Timer > 0)
@@ -40,12 +40,16 @@ partial struct FindTagetSystem : ISystem
             {
                 foreach (DistanceHit distanceHit in distanceHitsList)
                 {
-                    Unit unit = SystemAPI.GetComponent<Unit>(distanceHit.Entity);
-                    if (unit.m_Faction == findTarget.ValueRO.m_TargetFaction)
+                    // 命中的实体可能没有 Unit 组件，先判断再读取，避免异常
+                    if (SystemAPI.HasComponent<Unit>(distanceHit.Entity))
                     {
-                        target.ValueRW.m_TargetEntity = distanceHit.Entity;
-                        UnityEngine.Debug.Log("Find Target");
-                        break;
+                        Unit unit = SystemAPI.GetComponent<Unit>(distanceHit.Entity);
+                        if (unit.m_Faction == findTarget.ValueRO.m_TargetFaction)
+                        {
+                            target.ValueRW.m_TargetEntity = distanceHit.Entity;
+                            UnityEngine.Debug.Log("Find Target");
+                            break;
+                        }
                     }
                 }
             }
