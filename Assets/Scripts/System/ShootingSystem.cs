@@ -1,5 +1,6 @@
 using Unity.Burst;
 using Unity.Entities;
+using Unity.Transforms;
 using static HealthAuthoring;
 
 partial struct ShootingSystem : ISystem
@@ -9,11 +10,17 @@ partial struct ShootingSystem : ISystem
     [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
-        foreach ((RefRW<Shooting> shoot,
+        EntitiesReferences entitiesReferences = SystemAPI.GetSingleton<EntitiesReferences>();
+
+        foreach ((RefRO<LocalTransform> localTransform, RefRW<Shooting> shoot,
             RefRO<Target> target) in
-            SystemAPI.Query<RefRW<Shooting>,
-            RefRO<Target>>())
+            SystemAPI.Query<
+                RefRO<LocalTransform>,
+                RefRW<Shooting>,
+                RefRO<Target>>())
         {
+
+         
             if (target.ValueRO.m_TargetEntity == Entity.Null)
             {
                 continue;
@@ -25,9 +32,15 @@ partial struct ShootingSystem : ISystem
             }
             shoot.ValueRW.m_Timer = shoot.ValueRO.m_MaxTimer;
 
-            RefRW<Health> targetHealth = SystemAPI.GetComponentRW<Health>(target.ValueRO.m_TargetEntity);
-            int damageAmount = 1;
-            targetHealth.ValueRW.m_Health -= damageAmount;
+            Entity bulletEntity = state.EntityManager.Instantiate(entitiesReferences.m_BulletPrefabs);
+            SystemAPI.SetComponent(bulletEntity, LocalTransform.FromPosition(localTransform.ValueRO.Position));
+
+            RefRW<Bullet> bullet = SystemAPI.GetComponentRW<Bullet>(bulletEntity);
+            bullet.ValueRW.m_Damage = shoot.ValueRO.m_ShootDamage;
+
+
+            RefRW<Target> bulletTarget = SystemAPI.GetComponentRW<Target>(bulletEntity);
+            bulletTarget.ValueRW.m_TargetEntity = target.ValueRO.m_TargetEntity;
 
         }
 
