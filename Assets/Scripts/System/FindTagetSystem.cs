@@ -1,4 +1,3 @@
-using System.Data.Common;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
@@ -7,22 +6,17 @@ using Unity.Transforms;
 
 partial struct FindTagetSystem : ISystem
 {
-    [BurstCompile]
-    public void OnCreate(ref SystemState state)
-    {
-        
-    }
 
     [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
 
-        PhysicsWorldSingleton physicsWorldSingleton =  SystemAPI.GetSingleton<PhysicsWorldSingleton>();
+        PhysicsWorldSingleton physicsWorldSingleton = SystemAPI.GetSingleton<PhysicsWorldSingleton>();
         CollisionWorld collisionWorld = physicsWorldSingleton.CollisionWorld;
 
         NativeList<DistanceHit> distanceHitsList = new NativeList<DistanceHit>(Allocator.Temp);
-        foreach ((RefRO<LocalTransform> localTransform,RefRW<FindTarget> findTarget,RefRW<Target> target)
-            in SystemAPI.Query<RefRO<LocalTransform>,RefRW<FindTarget>,RefRW<Target>>())
+        foreach ((RefRO<LocalTransform> localTransform, RefRW<FindTarget> findTarget, RefRW<Target> target)
+            in SystemAPI.Query<RefRO<LocalTransform>, RefRW<FindTarget>, RefRW<Target>>())
         {
             distanceHitsList.Clear();
             CollisionFilter collisionFilter = new CollisionFilter
@@ -32,21 +26,22 @@ partial struct FindTagetSystem : ISystem
                 GroupIndex = 0
             };
 
+            //查找间隔，不需要每一帧都寻找
             findTarget.ValueRW.m_Timer -= SystemAPI.Time.DeltaTime;
 
-            if(findTarget.ValueRW.m_Timer > 0)
+            if (findTarget.ValueRW.m_Timer > 0)
             {
                 continue;
             }
             findTarget.ValueRW.m_Timer = findTarget.ValueRO.m_MaxTimer;
-            
 
-            if(collisionWorld.OverlapSphere(localTransform.ValueRO.Position,findTarget.ValueRO.m_Range, ref distanceHitsList, collisionFilter))
+
+            if (collisionWorld.OverlapSphere(localTransform.ValueRO.Position, findTarget.ValueRO.m_Range, ref distanceHitsList, collisionFilter))
             {
-                foreach(DistanceHit distanceHit in distanceHitsList)
+                foreach (DistanceHit distanceHit in distanceHitsList)
                 {
                     Unit unit = SystemAPI.GetComponent<Unit>(distanceHit.Entity);
-                    if(unit.m_Faction == findTarget.ValueRO.m_TargetFaction)
+                    if (unit.m_Faction == findTarget.ValueRO.m_TargetFaction)
                     {
                         target.ValueRW.m_TargetEntity = distanceHit.Entity;
                         UnityEngine.Debug.Log("Find Target");
@@ -57,9 +52,5 @@ partial struct FindTagetSystem : ISystem
         }
     }
 
-    [BurstCompile]
-    public void OnDestroy(ref SystemState state)
-    {
-        
-    }
+
 }
