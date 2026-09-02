@@ -32,19 +32,19 @@ partial struct BulletMoverSystem : ISystem
             float3 targetPosition = targetLocalTransform.TransformPoint(shootVictim.m_HitPosition);
 
 
-            float distanceBeforeSq = math.distancesq(localTransform.ValueRO.Position, targetPosition);
+            //float distanceBeforeSq = math.distancesq(localTransform.ValueRO.Position, targetPosition);
 
             float3 moveDirection = targetPosition - localTransform.ValueRO.Position;
             moveDirection = math.normalize(moveDirection);
 
             localTransform.ValueRW.Position += moveDirection * bullet.ValueRO.m_Speed * SystemAPI.Time.DeltaTime;
 
-            float distanceAfterSq = math.distancesq(localTransform.ValueRO.Position, targetPosition);
+            //float distanceAfterSq = math.distancesq(localTransform.ValueRO.Position, targetPosition);
 
-            if(distanceAfterSq > distanceBeforeSq)
-            {   //子弹速度过快而不能正确的命中敌人
-                localTransform.ValueRW.Position = targetPosition;
-            }
+            //if(distanceAfterSq > distanceBeforeSq)
+            //{   //子弹速度过快而不能正确的命中敌人
+            //    localTransform.ValueRW.Position = targetPosition;
+            //}
 
             float destroyDistance = 0.15f;
             // distancesq 是距离的平方，要和 destroyDistance 的平方比较
@@ -52,8 +52,9 @@ partial struct BulletMoverSystem : ISystem
             {
 
                 RefRW<Health> targetHealth = SystemAPI.GetComponentRW<Health>(target.ValueRO.m_TargetEntity);
-      
+                
                 targetHealth.ValueRW.m_Health -= bullet.ValueRO.m_Damage;
+                targetHealth.ValueRW.m_OnHealthChanged = true;
 
                 entityCommandBuffer.DestroyEntity(entity);
             }

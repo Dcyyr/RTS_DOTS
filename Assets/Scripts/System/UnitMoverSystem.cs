@@ -6,6 +6,8 @@ using Unity.Transforms;
 
 partial struct UnitMoverSystem : ISystem
 {
+
+    public const float REACHED_TARGET_DISTANCE = 2f;
     public void OnUpdate(ref SystemState state)
     {
         UnitMoverJob unitMoverJob = new UnitMoverJob
@@ -31,9 +33,9 @@ public partial struct UnitMoverJob : IJobEntity
         physicsVelocity.Angular = float3.zero;
 
         float3 moveDirection = unitMover.m_TargetPosition - localTransform.Position;
-
+        float reachedTargetDistance = UnitMoverSystem.REACHED_TARGET_DISTANCE;
         // 防止目标点等于当前位置时 normalize(0) 产生 NaN
-        if (math.lengthsq(moveDirection) < 0.01f)
+        if (math.lengthsq(moveDirection) < reachedTargetDistance)
         {
             physicsVelocity.Linear = float3.zero;
 

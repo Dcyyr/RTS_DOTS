@@ -41,16 +41,18 @@ partial struct FindTagetSystem : ISystem
                 foreach (DistanceHit distanceHit in distanceHitsList)
                 {
                     // 命中的实体可能没有 Unit 组件，先判断再读取，避免异常
-                    if (SystemAPI.HasComponent<Unit>(distanceHit.Entity))
+                    if (!SystemAPI.Exists(distanceHit.Entity) || !SystemAPI.HasComponent<Unit>(distanceHit.Entity))
                     {
-                        Unit unit = SystemAPI.GetComponent<Unit>(distanceHit.Entity);
-                        if (unit.m_Faction == findTarget.ValueRO.m_TargetFaction)
-                        {
-                            target.ValueRW.m_TargetEntity = distanceHit.Entity;
-                            UnityEngine.Debug.Log("Find Target");
-                            break;
-                        }
+                        continue;
                     }
+                    Unit unit = SystemAPI.GetComponent<Unit>(distanceHit.Entity);
+                    if (unit.m_Faction == findTarget.ValueRO.m_TargetFaction)
+                    {
+                        target.ValueRW.m_TargetEntity = distanceHit.Entity;
+                        UnityEngine.Debug.Log("Find Target");
+                        break;
+                    }
+                    
                 }
             }
         }
