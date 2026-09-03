@@ -125,6 +125,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 58067456588595245, guid: 15f270f86165112458331d39752320e2, type: 3}
+      propertyPath: m_Height
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 58067456588595245, guid: 15f270f86165112458331d39752320e2, type: 3}
+      propertyPath: m_Center.y
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1527083835448003278, guid: 15f270f86165112458331d39752320e2, type: 3}
       propertyPath: m_Range
       value: 7
@@ -175,6 +183,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3950572864947028302, guid: 15f270f86165112458331d39752320e2, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5516895263488930754, guid: 15f270f86165112458331d39752320e2, type: 3}
+      propertyPath: m_UseGravity
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6166725987932843383, guid: 15f270f86165112458331d39752320e2, type: 3}

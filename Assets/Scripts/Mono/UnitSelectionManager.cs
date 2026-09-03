@@ -130,19 +130,20 @@ public class UnitSelectionManager : MonoBehaviour
 
 
             EntityManager entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
-            EntityQuery entityQuery = new EntityQueryBuilder(Allocator.Temp).WithAll<UnitMover, Selected>().Build(entityManager);//只查"被选中"的单位
+            EntityQuery entityQuery = new EntityQueryBuilder(Allocator.Temp).WithAll<Selected>().WithPresent<MoveOverride>().Build(entityManager);//只查"被选中"的单位
 
             NativeArray<Entity> entityArray = entityQuery.ToEntityArray(Allocator.Temp);
-            NativeArray<UnitMover> unitMoverArray = entityQuery.ToComponentDataArray<UnitMover>(Allocator.Temp);
+            NativeArray<MoveOverride> unitMoveOverrideArray = entityQuery.ToComponentDataArray<MoveOverride>(Allocator.Temp);
             NativeArray<float3> movePositionArray = GenerateMovePositionArray(mousePosition, entityArray.Length);
-            for (int i = 0; i < unitMoverArray.Length; i++)
+            for (int i = 0; i < unitMoveOverrideArray.Length; i++)
             {
-                UnitMover unitMover = unitMoverArray[i];
-                unitMover.m_TargetPosition = movePositionArray[i];//改副本
-                unitMoverArray[i] = unitMover;//写回数组
+                MoveOverride unitMoveOverride = unitMoveOverrideArray[i];
+                unitMoveOverride.m_TargetPosition = movePositionArray[i];//改副本
+                unitMoveOverrideArray[i] = unitMoveOverride;//写回数组
+                entityManager.SetComponentEnabled<MoveOverride>(entityArray[i], true);//启用MoveOverride组件
             }
 
-            entityQuery.CopyFromComponentDataArray(unitMoverArray);//数组写回实体
+            entityQuery.CopyFromComponentDataArray(unitMoveOverrideArray);//数组写回实体
         }
     }
 

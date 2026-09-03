@@ -28,8 +28,9 @@ public partial struct UnitMoverJob : IJobEntity
     //ref可以写入，in只能读
     public void Execute(ref LocalTransform localTransform, in UnitMover unitMover, ref PhysicsVelocity physicsVelocity, ref PhysicsMass physicsMass)
     {
-      
-        physicsMass.InverseInertia = float3.zero;
+
+        physicsVelocity.Linear = float3.zero;
+        //physicsMass.InverseInertia = float3.zero;
         physicsVelocity.Angular = float3.zero;
 
         float3 moveDirection = unitMover.m_TargetPosition - localTransform.Position;

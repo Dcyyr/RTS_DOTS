@@ -1,8 +1,7 @@
-using Unity.Burst;
+﻿using Unity.Burst;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
-using static HealthAuthoring;
 
 partial struct ShootingSystem : ISystem
 {
@@ -19,11 +18,16 @@ partial struct ShootingSystem : ISystem
                 RefRW<LocalTransform>,
                 RefRW<Shooting>,
                 RefRO<Target>,
-                RefRW<UnitMover>>())
+                RefRW<UnitMover>>().WithDisabled<MoveOverride>())
         {
 
-         
             if (target.ValueRO.m_TargetEntity == Entity.Null)
+            {
+                continue;
+            }
+            // 目标已销毁或没有 LocalTransform 时跳过，避免系统崩溃
+            if (!SystemAPI.Exists(target.ValueRO.m_TargetEntity) ||
+                !SystemAPI.HasComponent<LocalTransform>(target.ValueRO.m_TargetEntity))
             {
                 continue;
             }
@@ -36,12 +40,13 @@ partial struct ShootingSystem : ISystem
 
             LocalTransform targetLocalTransform = SystemAPI.GetComponent<LocalTransform>(target.ValueRO.m_TargetEntity);
 
-            if(math.distance(localTransform.ValueRO.Position,targetLocalTransform.Position) > shoot.ValueRO.m_AttackDistance)
+            if (math.distance(localTransform.ValueRO.Position, targetLocalTransform.Position) > shoot.ValueRO.m_AttackDistance)
             {
-                //Ŀ�곬��������Χ,
+                // 目标超出攻击范围，移动
                 unitMover.ValueRW.m_TargetPosition = targetLocalTransform.Position;
                 continue;
-            }else
+            }
+            else
             {
                 unitMover.ValueRW.m_TargetPosition = localTransform.ValueRO.Position;
             }
@@ -50,7 +55,7 @@ partial struct ShootingSystem : ISystem
             aimDirection = math.normalize(aimDirection);
 
             quaternion targetRotation = quaternion.LookRotation(aimDirection, math.up());
-            localTransform.ValueRW.Rotation = math.slerp(localTransform.ValueRO.Rotation ,targetRotation, unitMover.ValueRO.m_RotateSpeed * SystemAPI.Time.DeltaTime);
+            localTransform.ValueRW.Rotation = math.slerp(localTransform.ValueRO.Rotation, targetRotation, unitMover.ValueRO.m_RotateSpeed * SystemAPI.Time.DeltaTime);
 
 
             Entity bulletEntity = state.EntityManager.Instantiate(entitiesReferences.m_BulletPrefabs);
