@@ -45,7 +45,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1527083835448003278, guid: 15f270f86165112458331d39752320e2, type: 3}
       propertyPath: m_Range
-      value: 15
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 1527083835448003278, guid: 15f270f86165112458331d39752320e2, type: 3}
       propertyPath: m_MaxTimer

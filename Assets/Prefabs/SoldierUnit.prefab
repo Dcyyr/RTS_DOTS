@@ -135,7 +135,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1527083835448003278, guid: 15f270f86165112458331d39752320e2, type: 3}
       propertyPath: m_Range
-      value: 7
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 1527083835448003278, guid: 15f270f86165112458331d39752320e2, type: 3}
       propertyPath: m_MaxTimer
@@ -266,6 +266,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_MaxTimer: 0.2
-  m_AttackDistance: 7
+  m_AttackDistance: 10
   m_ShootDamage: 5
   m_BulletTransform: {fileID: 2438838481681930476}

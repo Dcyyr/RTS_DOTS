@@ -2,8 +2,6 @@ using Unity.Burst;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
-using Unity.VisualScripting;
-using static HealthAuthoring;
 
 partial struct BulletMoverSystem : ISystem
 {
@@ -18,8 +16,11 @@ partial struct BulletMoverSystem : ISystem
         foreach ((RefRW<LocalTransform> localTransform,RefRO<Target> target,RefRO<Bullet> bullet,Entity entity)
             in SystemAPI.Query<RefRW<LocalTransform>,RefRO<Target>,RefRO<Bullet>>().WithEntityAccess())
         {
-            //敌人死亡后，子弹也要销毁
-            if (target.ValueRO.m_TargetEntity == Entity.Null)
+            // 目标已销毁/无效（僵尸被打死,子弹也销毁，避免卡在枪口堆积、也避免系统每帧崩溃
+            if (target.ValueRO.m_TargetEntity == Entity.Null ||
+                !SystemAPI.Exists(target.ValueRO.m_TargetEntity) ||
+                !SystemAPI.HasComponent<LocalTransform>(target.ValueRO.m_TargetEntity) ||
+                !SystemAPI.HasComponent<ShootVictim>(target.ValueRO.m_TargetEntity))
             {
                 entityCommandBuffer.DestroyEntity(entity);
                 continue;

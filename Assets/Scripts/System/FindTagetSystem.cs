@@ -1,6 +1,7 @@
 ﻿using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
+using Unity.Mathematics;
 using Unity.Physics;
 using Unity.Transforms;
 
@@ -15,6 +16,7 @@ partial struct FindTagetSystem : ISystem
         CollisionWorld collisionWorld = physicsWorldSingleton.CollisionWorld;
 
         NativeList<DistanceHit> distanceHitsList = new NativeList<DistanceHit>(Allocator.Temp);
+
         foreach ((RefRO<LocalTransform> localTransform, RefRW<FindTarget> findTarget, RefRW<Target> target)
             in SystemAPI.Query<RefRO<LocalTransform>, RefRW<FindTarget>, RefRW<Target>>())
         {
@@ -36,6 +38,17 @@ partial struct FindTagetSystem : ISystem
             findTarget.ValueRW.m_Timer = findTarget.ValueRO.m_MaxTimer;
 
 
+            Entity closestTargetEntity = Entity.Null;
+            float closestTargetDistance = float.MaxValue;
+            float currentTargetDistance = 0f;
+            if(target.ValueRO.m_TargetEntity != Entity.Null)
+            {
+                closestTargetEntity = target.ValueRO.m_TargetEntity;
+                LocalTransform targetLocalTransform = SystemAPI.GetComponent<LocalTransform>(target.ValueRO.m_TargetEntity);
+                closestTargetDistance = math.distance(localTransform.ValueRO.Position, targetLocalTransform.Position);
+                currentTargetDistance = 2f;
+            }
+
             if (collisionWorld.OverlapSphere(localTransform.ValueRO.Position, findTarget.ValueRO.m_Range, ref distanceHitsList, collisionFilter))
             {
                 foreach (DistanceHit distanceHit in distanceHitsList)
@@ -47,7 +60,21 @@ partial struct FindTagetSystem : ISystem
                     }
                     Unit unit = SystemAPI.GetComponent<Unit>(distanceHit.Entity);
                     if (unit.m_Faction == findTarget.ValueRO.m_TargetFaction)
-                    {
+                    {   //最近的那个实体没有找到，让打中那个实体成最近的
+                        if(closestTargetEntity == Entity.Null)
+                        {
+                            closestTargetEntity = distanceHit.Entity;
+                            closestTargetDistance = distanceHit.Distance;
+                        }
+                        else
+                        {
+                            if(distanceHit.Distance + currentTargetDistance < closestTargetDistance)
+                            {
+                                closestTargetEntity = distanceHit.Entity;
+                                closestTargetDistance = distanceHit.Distance;
+                            }
+                        }
+
                         target.ValueRW.m_TargetEntity = distanceHit.Entity;
                         UnityEngine.Debug.Log("Find Target");
                         break;

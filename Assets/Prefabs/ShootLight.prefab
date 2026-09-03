@@ -9,9 +9,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2702642702823346413}
-  - component: {fileID: 3457907733279320503}
-  - component: {fileID: 1450407014358567471}
   - component: {fileID: -2002474061208531318}
+  - component: {fileID: -3312633237972328289}
+  - component: {fileID: -4140550764086571080}
   m_Layer: 0
   m_Name: ShootLight
   m_TagString: Untagged
@@ -34,7 +34,20 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!108 &3457907733279320503
+--- !u!114 &-2002474061208531318
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5156352534656579484}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9eba772d44f27c42b1468823a67566c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Timer: 0.15
+--- !u!108 &-3312633237972328289
 Light:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -44,9 +57,9 @@ Light:
   m_Enabled: 1
   serializedVersion: 11
   m_Type: 2
-  m_Color: {r: 1, g: 0.5481836, b: 0, a: 1}
-  m_Intensity: 20
-  m_Range: 5
+  m_Color: {r: 1, g: 0.63573027, b: 0.08018869, a: 1}
+  m_Intensity: 15
+  m_Range: 10
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize: 10
@@ -99,7 +112,7 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
---- !u!114 &1450407014358567471
+--- !u!114 &-4140550764086571080
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -122,16 +135,3 @@ MonoBehaviour:
   m_LightCookieSize: {x: 1, y: 1}
   m_LightCookieOffset: {x: 0, y: 0}
   m_SoftShadowQuality: 0
---- !u!114 &-2002474061208531318
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5156352534656579484}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e9eba772d44f27c42b1468823a67566c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Timer: 0.15

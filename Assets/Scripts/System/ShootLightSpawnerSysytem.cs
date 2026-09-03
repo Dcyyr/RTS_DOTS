@@ -5,6 +5,11 @@ using Unity.Transforms;
 [UpdateInGroup(typeof(LateSimulationSystemGroup))]
 partial struct ShootLightSpawnerSystem : ISystem
 {
+    [BurstCompile]
+    public void OnCreate(ref SystemState state)
+    {
+        state.RequireForUpdate<EntitiesReferences>();
+    }
 
     [BurstCompile]
     public void OnUpdate(ref SystemState state)
