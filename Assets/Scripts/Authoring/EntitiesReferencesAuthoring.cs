@@ -6,6 +6,7 @@ public class EntitiesReferencesAuthoring : MonoBehaviour
 
     public GameObject m_BulletPrefabs;
     public GameObject m_ZombiePrefab;
+    public GameObject m_ShootingLight;
 
     public class Baker : Baker<EntitiesReferencesAuthoring>
     {
@@ -16,6 +17,7 @@ public class EntitiesReferencesAuthoring : MonoBehaviour
             {
                 m_BulletPrefabs = GetEntity(authoring.m_BulletPrefabs, TransformUsageFlags.Dynamic),
                 m_ZombiePrefab = GetEntity(authoring.m_ZombiePrefab, TransformUsageFlags.Dynamic),
+                m_ShootingLightPrefab = GetEntity(authoring.m_ShootingLight, TransformUsageFlags.Dynamic)
             });
         }
     }
@@ -25,5 +27,6 @@ public struct EntitiesReferences : IComponentData
 {
     public Entity m_BulletPrefabs;
     public Entity m_ZombiePrefab;
+    public Entity m_ShootingLightPrefab;
 }
 

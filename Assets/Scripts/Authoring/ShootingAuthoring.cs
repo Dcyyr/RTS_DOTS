@@ -28,13 +28,20 @@ public class ShootingAuthoring : MonoBehaviour
 
 public struct Shooting : IComponentData
 {
-    public float m_Timer;
-    public float m_MaxTimer;
-
     public int m_ShootDamage;
 
+    public float m_Timer;
+    public float m_MaxTimer;
     public float m_AttackDistance;
 
     public float3 m_BulletTransform;
+    //Event
+    public OnShootEvent m_OnShoot;
+
+    public struct OnShootEvent
+    {
+        public bool m_IsTriggered;
+        public float3 m_ShootFromPosition;
+    }
 
 }
