@@ -5,7 +5,7 @@ using Unity.Mathematics;
 using Unity.Physics;
 using Unity.Transforms;
 
-partial struct FindTagetSystem : ISystem
+partial struct FindTargetSystem : ISystem
 {
 
     [BurstCompile]
@@ -17,17 +17,9 @@ partial struct FindTagetSystem : ISystem
 
         NativeList<DistanceHit> distanceHitsList = new NativeList<DistanceHit>(Allocator.Temp);
 
-        foreach ((RefRO<LocalTransform> localTransform, RefRW<FindTarget> findTarget, RefRW<Target> target)
-            in SystemAPI.Query<RefRO<LocalTransform>, RefRW<FindTarget>, RefRW<Target>>())
+        foreach ((RefRO<LocalTransform> localTransform, RefRW<FindTarget> findTarget, RefRW<Target> target, RefRO<TargetOverride> targetOverride)
+            in SystemAPI.Query<RefRO<LocalTransform>, RefRW<FindTarget>, RefRW<Target>,RefRO<TargetOverride>>())
         {
-            distanceHitsList.Clear();
-            CollisionFilter collisionFilter = new CollisionFilter
-            {
-                BelongsTo = ~0u,
-                CollidesWith = 1u << GameAssets.UNITS_LAYER,
-                GroupIndex = 0
-            };
-
             // 搜索计时，不需要每一帧都寻找
             findTarget.ValueRW.m_Timer -= SystemAPI.Time.DeltaTime;
 
@@ -36,6 +28,23 @@ partial struct FindTagetSystem : ISystem
                 continue;
             }
             findTarget.ValueRW.m_Timer = findTarget.ValueRO.m_MaxTimer;
+
+
+            if (targetOverride.ValueRO.m_TargetEntity != Entity.Null)
+            {
+                target.ValueRW.m_TargetEntity = targetOverride.ValueRO.m_TargetEntity;
+                continue;
+            }
+
+            distanceHitsList.Clear();
+            CollisionFilter collisionFilter = new CollisionFilter
+            {
+                BelongsTo = ~0u,
+                CollidesWith = 1u << GameAssets.UNITS_LAYER,
+                GroupIndex = 0
+            };
+
+           
 
 
             Entity closestTargetEntity = Entity.Null;

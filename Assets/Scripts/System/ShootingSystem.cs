@@ -17,12 +17,12 @@ partial struct ShootingSystem : ISystem
         EntitiesReferences entitiesReferences = SystemAPI.GetSingleton<EntitiesReferences>();
 
         foreach ((RefRW<LocalTransform> localTransform, RefRW<Shooting> shoot,
-            RefRO<Target> target, RefRW<UnitMover> unitMover) in
+            RefRO<Target> target, RefRW<UnitMover> unitMover,Entity entity) in
             SystemAPI.Query<
                 RefRW<LocalTransform>,
                 RefRW<Shooting>,
                 RefRO<Target>,
-                RefRW<UnitMover>>().WithDisabled<MoveOverride>())
+                RefRW<UnitMover>>().WithDisabled<MoveOverride>().WithEntityAccess())
         {
 
             if (target.ValueRO.m_TargetEntity == Entity.Null)
@@ -60,6 +60,13 @@ partial struct ShootingSystem : ISystem
 
             quaternion targetRotation = quaternion.LookRotation(aimDirection, math.up());
             localTransform.ValueRW.Rotation = math.slerp(localTransform.ValueRO.Rotation, targetRotation, unitMover.ValueRO.m_RotateSpeed * SystemAPI.Time.DeltaTime);
+
+            //攻击敌人时，敌人反击
+            RefRW<TargetOverride> enemyTargetOverride = SystemAPI.GetComponentRW<TargetOverride>(target.ValueRO.m_TargetEntity);
+            if(enemyTargetOverride.ValueRO.m_TargetEntity == Entity.Null)
+            {
+                enemyTargetOverride.ValueRW.m_TargetEntity = entity;
+            }
 
 
             Entity bulletEntity = state.EntityManager.Instantiate(entitiesReferences.m_BulletPrefabs);
