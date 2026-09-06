@@ -185,6 +185,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4768008741565638177, guid: 15f270f86165112458331d39752320e2, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 0ed9a8419c3ed6c4d812c63c5f587e5f, type: 2}
     - target: {fileID: 5516895263488930754, guid: 15f270f86165112458331d39752320e2, type: 3}
       propertyPath: m_UseGravity
       value: 0
@@ -193,6 +197,10 @@ PrefabInstance:
       propertyPath: m_Faction
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7634893979288572709, guid: 15f270f86165112458331d39752320e2, type: 3}
+      propertyPath: m_Mesh
+      value: 
+      objectReference: {fileID: 4300000, guid: b628a2a6897ec8b42b9f10a4630a496e, type: 2}
     - target: {fileID: 8750533490200415746, guid: 15f270f86165112458331d39752320e2, type: 3}
       propertyPath: m_Name
       value: SoldierUnit

@@ -1,4 +1,4 @@
-﻿using Unity.Burst;
+using Unity.Burst;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
@@ -17,7 +17,7 @@ partial struct ShootingSystem : ISystem
         EntitiesReferences entitiesReferences = SystemAPI.GetSingleton<EntitiesReferences>();
 
         foreach ((RefRW<LocalTransform> localTransform, RefRW<Shooting> shoot,
-            RefRO<Target> target, RefRW<UnitMover> unitMover,Entity entity) in
+            RefRO<Target> target, RefRW<UnitMover> unitMover, Entity entity) in
             SystemAPI.Query<
                 RefRW<LocalTransform>,
                 RefRW<Shooting>,
@@ -35,18 +35,11 @@ partial struct ShootingSystem : ISystem
             {
                 continue;
             }
-            shoot.ValueRW.m_Timer -= SystemAPI.Time.DeltaTime;
-            if (shoot.ValueRW.m_Timer > 0f)
-            {
-                continue;
-            }
-            shoot.ValueRW.m_Timer = shoot.ValueRO.m_MaxTimer;
-
             LocalTransform targetLocalTransform = SystemAPI.GetComponent<LocalTransform>(target.ValueRO.m_TargetEntity);
 
             if (math.distance(localTransform.ValueRO.Position, targetLocalTransform.Position) > shoot.ValueRO.m_AttackDistance)
             {
-                // 目标超出攻击范围，移动
+                // 目标超出攻击范围，走过去（走路时 UnitMoverJob 会面向移动方向）
                 unitMover.ValueRW.m_TargetPosition = targetLocalTransform.Position;
                 continue;
             }
@@ -55,19 +48,39 @@ partial struct ShootingSystem : ISystem
                 unitMover.ValueRW.m_TargetPosition = localTransform.ValueRO.Position;
             }
 
+            // 每帧转向目标（在射程内持续瞄准）
             float3 aimDirection = targetLocalTransform.Position - localTransform.ValueRO.Position;
             aimDirection = math.normalize(aimDirection);
 
             quaternion targetRotation = quaternion.LookRotation(aimDirection, math.up());
-            localTransform.ValueRW.Rotation = math.slerp(localTransform.ValueRO.Rotation, targetRotation, unitMover.ValueRO.m_RotateSpeed * SystemAPI.Time.DeltaTime);
+            quaternion newRotation = math.slerp(localTransform.ValueRO.Rotation, targetRotation, unitMover.ValueRO.m_RotateSpeed * SystemAPI.Time.DeltaTime);
+            localTransform.ValueRW.Rotation = newRotation;
 
-            //攻击敌人时，敌人反击
-            RefRW<TargetOverride> enemyTargetOverride = SystemAPI.GetComponentRW<TargetOverride>(target.ValueRO.m_TargetEntity);
-            if(enemyTargetOverride.ValueRO.m_TargetEntity == Entity.Null)
+            // 还没面向目标就不开火，继续转（dot < 0.98 ≈ 夹角超过 ~11°）
+            float3 forward = math.mul(newRotation, new float3(0, 0, 1));
+            if (math.dot(forward, aimDirection) < 0.98f)
             {
-                enemyTargetOverride.ValueRW.m_TargetEntity = entity;
+                continue;
             }
 
+            // 开火冷却：只有真正开火才消耗计时，转身过程不烧冷却
+            shoot.ValueRW.m_Timer -= SystemAPI.Time.DeltaTime;
+            if (shoot.ValueRW.m_Timer > 0f)
+            {
+                continue;
+            }
+            shoot.ValueRW.m_Timer = shoot.ValueRO.m_MaxTimer;
+
+            // 攻击敌人时，敌人反击（目标需要有 TargetOverride 组件）
+            if (SystemAPI.Exists(target.ValueRO.m_TargetEntity) &&
+                SystemAPI.HasComponent<TargetOverride>(target.ValueRO.m_TargetEntity))
+            {
+                RefRW<TargetOverride> enemyTargetOverride = SystemAPI.GetComponentRW<TargetOverride>(target.ValueRO.m_TargetEntity);
+                if (enemyTargetOverride.ValueRO.m_TargetEntity == Entity.Null)
+                {
+                    enemyTargetOverride.ValueRW.m_TargetEntity = entity;
+                }
+            }
 
             Entity bulletEntity = state.EntityManager.Instantiate(entitiesReferences.m_BulletPrefabs);
             float3 bulletSpawnWorldPos = localTransform.ValueRO.TransformPoint(shoot.ValueRO.m_BulletTransform);
@@ -76,19 +89,11 @@ partial struct ShootingSystem : ISystem
             RefRW<Bullet> bullet = SystemAPI.GetComponentRW<Bullet>(bulletEntity);
             bullet.ValueRW.m_Damage = shoot.ValueRO.m_ShootDamage;
 
-
             RefRW<Target> bulletTarget = SystemAPI.GetComponentRW<Target>(bulletEntity);
             bulletTarget.ValueRW.m_TargetEntity = target.ValueRO.m_TargetEntity;
 
             shoot.ValueRW.m_OnShoot.m_IsTriggered = true;
             shoot.ValueRW.m_OnShoot.m_ShootFromPosition = bulletSpawnWorldPos;
-
-
-
         }
-
-
     }
-
-
 }
