@@ -6,7 +6,7 @@ using UnityEngine.Rendering;
 public class AcitveAnimationAuthoring : MonoBehaviour
 {
 
-    public AnimationDataSO m_SoldierIdle;
+    public AnimationDataSO.AnimationType m_NextAnimationType;
 
     public class Baker : Baker<AcitveAnimationAuthoring>
     {
@@ -17,6 +17,7 @@ public class AcitveAnimationAuthoring : MonoBehaviour
             EntitiesGraphicsSystem entitiesGraphicsSystem = World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<EntitiesGraphicsSystem>();
             AddComponent(entity, new AcitveAnimation
             {
+                m_NextAnimationType = authoring.m_NextAnimationType,
             });
         }
     }
@@ -28,7 +29,9 @@ public struct AcitveAnimation : IComponentData
     public float m_Frame;
     public float m_FrameTimer;
 
-    public BlobAssetReference<AnimationInfo> m_AnimationInfoAssetReference;
+    public AnimationDataSO.AnimationType m_AnimationType;
+    public AnimationDataSO.AnimationType m_NextAnimationType;
+
 
 }
 
