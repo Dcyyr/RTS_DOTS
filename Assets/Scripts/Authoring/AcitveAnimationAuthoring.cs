@@ -1,7 +1,6 @@
 using Unity.Entities;
 using Unity.Rendering;
 using UnityEngine;
-using UnityEngine.Rendering;
 
 public class AcitveAnimationAuthoring : MonoBehaviour
 {
@@ -15,7 +14,7 @@ public class AcitveAnimationAuthoring : MonoBehaviour
             Entity entity = GetEntity(TransformUsageFlags.Dynamic);
 
             EntitiesGraphicsSystem entitiesGraphicsSystem = World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<EntitiesGraphicsSystem>();
-            AddComponent(entity, new AcitveAnimation
+            AddComponent(entity, new ActiveAnimation
             {
                 m_NextAnimationType = authoring.m_NextAnimationType,
             });
@@ -24,7 +23,7 @@ public class AcitveAnimationAuthoring : MonoBehaviour
 
 }
 
-public struct AcitveAnimation : IComponentData
+public struct ActiveAnimation : IComponentData
 {
     public float m_Frame;
     public float m_FrameTimer;

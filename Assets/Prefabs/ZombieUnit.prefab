@@ -51,6 +51,14 @@ PrefabInstance:
       propertyPath: m_MaxTimer
       value: 0.2
       objectReference: {fileID: 0}
+    - target: {fileID: 3317673765905881794, guid: 15f270f86165112458331d39752320e2, type: 3}
+      propertyPath: m_IdleAnimation
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 3317673765905881794, guid: 15f270f86165112458331d39752320e2, type: 3}
+      propertyPath: m_WalkAnimation
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 3950572864947028302, guid: 15f270f86165112458331d39752320e2, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -106,6 +114,10 @@ PrefabInstance:
     - target: {fileID: 8750533490200415746, guid: 15f270f86165112458331d39752320e2, type: 3}
       propertyPath: m_Name
       value: ZombieUnit
+      objectReference: {fileID: 0}
+    - target: {fileID: 8976687261155277141, guid: 15f270f86165112458331d39752320e2, type: 3}
+      propertyPath: m_NextAnimationType
+      value: 3
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

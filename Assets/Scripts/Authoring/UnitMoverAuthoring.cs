@@ -30,4 +30,6 @@ public struct UnitMover : IComponentData
     public float m_RotateSpeed;
 
     public float3 m_TargetPosition;
+
+    public bool m_IsMoving;
 }

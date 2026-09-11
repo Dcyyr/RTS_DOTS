@@ -1,4 +1,4 @@
-using Unity.Burst;
+ï»¿using Unity.Burst;
 using Unity.Entities;
 using Unity.Rendering;
 [UpdateBefore(typeof(ActiveAnimationSystem))]
@@ -15,18 +15,18 @@ partial struct ChangeAnimationSystem : ISystem
     {
         AnimationDataSet animationDataSet = SystemAPI.GetSingleton<AnimationDataSet>();
 
-        foreach ((RefRW<AcitveAnimation> activeAnimation, RefRW<MaterialMeshInfo> materialMeshInfo)
-            in SystemAPI.Query<RefRW<AcitveAnimation>, RefRW<MaterialMeshInfo>>())
+        foreach ((RefRW<ActiveAnimation> activeAnimation, RefRW<MaterialMeshInfo> materialMeshInfo)
+            in SystemAPI.Query<RefRW<ActiveAnimation>, RefRW<MaterialMeshInfo>>())
         {
 
             if (activeAnimation.ValueRO.m_AnimationType != activeAnimation.ValueRO.m_NextAnimationType)
             {
-                activeAnimation.ValueRW.m_FrameTimer = 0f;
                 activeAnimation.ValueRW.m_Frame = 0;
+                activeAnimation.ValueRW.m_FrameTimer = 0f;
                 activeAnimation.ValueRW.m_AnimationType = activeAnimation.ValueRO.m_NextAnimationType;
 
-                //¸Ämesh
-                ref AnimationData animationData = ref animationDataSet.m_AnimationDataBlobArrayAssetReference.Value[(int)activeAnimation.ValueRO.m_Frame];
+                //æ”¹mesh
+                ref AnimationData animationData = ref animationDataSet.m_AnimationDataBlobArrayAssetReference.Value[(int)activeAnimation.ValueRW.m_AnimationType];
                 materialMeshInfo.ValueRW.MeshID = animationData.m_BatchMeshIdBlobArray[0];
 
             }

@@ -17,18 +17,11 @@ partial struct ActiveAnimationSystem : ISystem
 
         AnimationDataSet animationDataSet = SystemAPI.GetSingleton<AnimationDataSet>();
 
-        foreach((RefRW<AcitveAnimation> activeAnimation,RefRW<MaterialMeshInfo> materialMeshInfo)
-            in SystemAPI.Query<RefRW<AcitveAnimation>,RefRW<MaterialMeshInfo>>())
+        foreach((RefRW<ActiveAnimation> activeAnimation,RefRW<MaterialMeshInfo> materialMeshInfo)
+            in SystemAPI.Query<RefRW<ActiveAnimation>,RefRW<MaterialMeshInfo>>())
         {
 
-            if(Input.GetKeyDown(KeyCode.Q))
-            {
-                activeAnimation.ValueRW.m_NextAnimationType = AnimationDataSO.AnimationType.SoldierIdle;
-            }
-            if (Input.GetKeyDown(KeyCode.E))
-            {
-                activeAnimation.ValueRW.m_NextAnimationType = AnimationDataSO.AnimationType.SoldierWalk;
-            }
+           
 
             ref AnimationData animationData = ref animationDataSet.m_AnimationDataBlobArrayAssetReference.Value[(int)activeAnimation.ValueRW.m_AnimationType];
 

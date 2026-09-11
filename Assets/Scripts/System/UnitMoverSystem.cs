@@ -26,11 +26,10 @@ public partial struct UnitMoverJob : IJobEntity
     public float delteTime;
 
     //ref可以写入，in只能读
-    public void Execute(ref LocalTransform localTransform, in UnitMover unitMover, ref PhysicsVelocity physicsVelocity, ref PhysicsMass physicsMass)
+    public void Execute(ref LocalTransform localTransform, ref UnitMover unitMover, ref PhysicsVelocity physicsVelocity, ref PhysicsMass physicsMass)
     {
 
         physicsVelocity.Linear = float3.zero;
-        //physicsMass.InverseInertia = float3.zero;
         physicsVelocity.Angular = float3.zero;
 
         float3 moveDirection = unitMover.m_TargetPosition - localTransform.Position;
@@ -39,9 +38,11 @@ public partial struct UnitMoverJob : IJobEntity
         if (math.lengthsq(moveDirection) < reachedTargetDistance)
         {
             physicsVelocity.Linear = float3.zero;
-
+            unitMover.m_IsMoving = false;
             return;
         }
+        unitMover.m_IsMoving = true;
+
 
         moveDirection = math.normalize(moveDirection);
         localTransform.Rotation = math.slerp(localTransform.Rotation, quaternion.LookRotation(moveDirection, math.up()), delteTime * unitMover.m_RotateSpeed);
