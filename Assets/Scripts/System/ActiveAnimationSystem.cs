@@ -36,7 +36,18 @@ partial struct ActiveAnimationSystem : ISystem
                 materialMeshInfo.ValueRW.MeshID = animationData.m_BatchMeshIdBlobArray[(int)activeAnimation.ValueRW.m_Frame];
 
 
+                if(activeAnimation.ValueRO.m_Frame == 0 && activeAnimation.ValueRO.m_AnimationType == AnimationDataSO.AnimationType.SoldierAttack)
+                {
+                    activeAnimation.ValueRW.m_AnimationType = AnimationDataSO.AnimationType.None;
+                }
+
+                if (activeAnimation.ValueRO.m_Frame == 0 && activeAnimation.ValueRO.m_AnimationType == AnimationDataSO.AnimationType.ZombieMeleeAttack)
+                {
+                    activeAnimation.ValueRW.m_AnimationType = AnimationDataSO.AnimationType.None;
+                }
             }
+
+
         }
     }
 

@@ -12,7 +12,7 @@ partial struct ResetEventsSystem : ISystem
         new ResetSelectedEventsJob().ScheduleParallel();
         new ResetHealthEventsJob().ScheduleParallel();
         new ResetShootingEventsJob().ScheduleParallel();
-
+        new ResetMeleeAttackEventsJob().ScheduleParallel();
         /**
         foreach(RefRW<Selected> selected in SystemAPI.Query<RefRW<Selected>>().WithPresent<Selected>())
         {
@@ -63,6 +63,15 @@ public partial struct ResetShootingEventsJob : IJobEntity
     public void Execute(ref Shooting shooting)
     {
         shooting.m_OnShoot.m_IsTriggered = false;
+    }
+}
+
+[BurstCompile]
+public partial struct ResetMeleeAttackEventsJob : IJobEntity
+{
+    public void Execute(ref MeleeAttack attack)
+    {
+        attack.OnAttacked = false;
     }
 }
 

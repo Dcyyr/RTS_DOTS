@@ -257,12 +257,20 @@ PrefabInstance:
       value: 30
       objectReference: {fileID: 0}
     - target: {fileID: 2824032194451052407, guid: a49adac3bea7f8f42a75947788c84858, type: 3}
+      propertyPath: m_AimAnimation
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2824032194451052407, guid: a49adac3bea7f8f42a75947788c84858, type: 3}
       propertyPath: m_IdleAnimation
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2824032194451052407, guid: a49adac3bea7f8f42a75947788c84858, type: 3}
       propertyPath: m_WalkAnimation
       value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2824032194451052407, guid: a49adac3bea7f8f42a75947788c84858, type: 3}
+      propertyPath: m_AttackAnimation
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 4605218627203976443, guid: a49adac3bea7f8f42a75947788c84858, type: 3}
       propertyPath: m_LocalPosition.x
@@ -319,9 +327,6 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 8091393200930440119, guid: a49adac3bea7f8f42a75947788c84858, type: 3}
       insertIndex: -1
       addedObject: {fileID: 905476439}
-    - targetCorrespondingSourceObject: {fileID: 8091393200930440119, guid: a49adac3bea7f8f42a75947788c84858, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 905476456}
     - targetCorrespondingSourceObject: {fileID: 8327770751366349930, guid: a49adac3bea7f8f42a75947788c84858, type: 3}
       insertIndex: -1
       addedObject: {fileID: 787383152}
@@ -369,20 +374,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5856951e4810a43499006e2b5e728ba3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &905476456
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 905476426}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bf58499193779dd4fbd8b434e63de2a2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_IdleAnimation: 1
-  m_WalkAnimation: 2
 --- !u!1 &935356906 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 8091393200930440119, guid: a49adac3bea7f8f42a75947788c84858, type: 3}
@@ -409,12 +400,20 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 2824032194451052407, guid: a49adac3bea7f8f42a75947788c84858, type: 3}
+      propertyPath: m_AimAnimation
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2824032194451052407, guid: a49adac3bea7f8f42a75947788c84858, type: 3}
       propertyPath: m_IdleAnimation
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2824032194451052407, guid: a49adac3bea7f8f42a75947788c84858, type: 3}
       propertyPath: m_WalkAnimation
       value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2824032194451052407, guid: a49adac3bea7f8f42a75947788c84858, type: 3}
+      propertyPath: m_AttackAnimation
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 4605218627203976443, guid: a49adac3bea7f8f42a75947788c84858, type: 3}
       propertyPath: m_LocalPosition.x
@@ -695,6 +694,10 @@ PrefabInstance:
     - target: {fileID: 8477268365115802282, guid: d127a6cd0c72d6a4f99f98bb096eb63d, type: 3}
       propertyPath: m_WalkAnimation
       value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 8477268365115802282, guid: d127a6cd0c72d6a4f99f98bb096eb63d, type: 3}
+      propertyPath: m_MeleeAttackAnimation
+      value: 7
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

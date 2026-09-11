@@ -19,6 +19,16 @@ partial struct ChangeAnimationSystem : ISystem
             in SystemAPI.Query<RefRW<ActiveAnimation>, RefRW<MaterialMeshInfo>>())
         {
 
+            if(activeAnimation.ValueRO.m_AnimationType == AnimationDataSO.AnimationType.SoldierAttack)
+            {
+                continue;
+            }
+
+            if (activeAnimation.ValueRO.m_AnimationType == AnimationDataSO.AnimationType.ZombieMeleeAttack)
+            {
+                continue;
+            }
+
             if (activeAnimation.ValueRO.m_AnimationType != activeAnimation.ValueRO.m_NextAnimationType)
             {
                 activeAnimation.ValueRW.m_Frame = 0;
