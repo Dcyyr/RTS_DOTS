@@ -1,4 +1,4 @@
-using Unity.Burst;
+﻿using Unity.Burst;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
@@ -16,9 +16,17 @@ partial struct LoseTargetSystem : ISystem
             if (target.ValueRO.m_TargetEntity == Entity.Null)
                 continue;
 
-            //���������
+            //鼠标点击敌人
             if (targetOverride.ValueRO.m_TargetEntity != Entity.Null)
-            {   //��������Ӱ�������߼�
+            {   //继续，不影响以下逻辑
+                continue;
+            }
+
+            // 目标已销毁/无效（僵尸被打死等）→ 直接丢失目标，避免对无效实体调用 HasComponent/GetComponent 抛异常
+            if (!SystemAPI.Exists(target.ValueRO.m_TargetEntity) ||
+                !SystemAPI.HasComponent<LocalTransform>(target.ValueRO.m_TargetEntity))
+            {
+                target.ValueRW.m_TargetEntity = Entity.Null;
                 continue;
             }
 
@@ -27,7 +35,7 @@ partial struct LoseTargetSystem : ISystem
 
             if (targetDistance > loseTarget.ValueRO.m_LoseTargetDistance)
             {
-                //Ŀ�����̫Զ��ʧȥĿ�꣬reset
+                //目标距离太远，失去目标，reset
                 target.ValueRW.m_TargetEntity = Entity.Null;
             }
         }

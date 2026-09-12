@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using Unity.Burst;
 using Unity.Entities;
 using Unity.Mathematics;
@@ -21,7 +21,6 @@ partial struct HealthBarSystem : ISystem
         m_PostTransformMatrixComponentLookup = state.GetComponentLookup<PostTransformMatrix>();
     }
 
-    [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
 
@@ -46,25 +45,7 @@ partial struct HealthBarSystem : ISystem
 
         healthBarJob.ScheduleParallel();
 
-        //foreach((RefRW<LocalTransform> localTransform, RefRO<HealthBar> healthBar) in SystemAPI.Query<RefRW<LocalTransform>, RefRO<HealthBar>>())
-        //{
-
-        //    LocalTransform parentLoaclTransform = SystemAPI.GetComponent<LocalTransform>(healthBar.ValueRO.m_HealthEntity);
-        //    localTransform.ValueRW.Rotation = parentLoaclTransform.InverseTransformRotation(quaternion.LookRotation(cameraForword, 1));
-
-        //    Health health = SystemAPI.GetComponent<Health>(healthBar.ValueRO.m_HealthEntity);
-
-        //    if(!health.m_OnHealthChanged)
-        //    {
-        //        continue;
-        //    }
-
-        //    Debug.Log("Health Update");
-        //    float healthPercentage = (float)health.m_Health / health.m_MaxHealth;
-
-        //    RefRW<PostTransformMatrix> healthBarTransformMatrix = SystemAPI.GetComponentRW<PostTransformMatrix>(healthBar.ValueRO.m_HealthBarEntity);
-        //    healthBarTransformMatrix.ValueRW.Value = float4x4.Scale(healthPercentage, 1, 1);
-        //}
+        
     }
 
 
@@ -93,7 +74,6 @@ public partial struct HealthBarJob : IJobEntity
             return;
         }
 
-        Debug.Log("Health Update");
         float healthPercentage = (float)health.m_Health / health.m_MaxHealth;
 
         RefRW<PostTransformMatrix> healthBarTransformMatrix = postTransformMatrixComponentLookup.GetRefRW(healthBar.m_HealthBarEntity);

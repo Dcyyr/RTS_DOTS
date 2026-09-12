@@ -14,34 +14,49 @@ partial struct ChangeAnimationSystem : ISystem
     public void OnUpdate(ref SystemState state)
     {
         AnimationDataSet animationDataSet = SystemAPI.GetSingleton<AnimationDataSet>();
-
-        foreach ((RefRW<ActiveAnimation> activeAnimation, RefRW<MaterialMeshInfo> materialMeshInfo)
-            in SystemAPI.Query<RefRW<ActiveAnimation>, RefRW<MaterialMeshInfo>>())
-        {
-
-            if(activeAnimation.ValueRO.m_AnimationType == AnimationDataSO.AnimationType.SoldierAttack)
-            {
-                continue;
-            }
-
-            if (activeAnimation.ValueRO.m_AnimationType == AnimationDataSO.AnimationType.ZombieMeleeAttack)
-            {
-                continue;
-            }
-
-            if (activeAnimation.ValueRO.m_AnimationType != activeAnimation.ValueRO.m_NextAnimationType)
-            {
-                activeAnimation.ValueRW.m_Frame = 0;
-                activeAnimation.ValueRW.m_FrameTimer = 0f;
-                activeAnimation.ValueRW.m_AnimationType = activeAnimation.ValueRO.m_NextAnimationType;
-
-                //改mesh
-                ref AnimationData animationData = ref animationDataSet.m_AnimationDataBlobArrayAssetReference.Value[(int)activeAnimation.ValueRW.m_AnimationType];
-                materialMeshInfo.ValueRW.MeshID = animationData.m_BatchMeshIdBlobArray[0];
-
-            }
-        }
+        ChangeAnimationJob changeAnimationJob = new ChangeAnimationJob
+        { 
+            m_AnimationDataBlobArrayAssetReference = animationDataSet.m_AnimationDataBlobArrayAssetReference,
+        
+        };
+        changeAnimationJob.ScheduleParallel();
     }
 
 
 }
+
+
+public partial struct ChangeAnimationJob : IJobEntity
+{
+    public BlobAssetReference<BlobArray<AnimationData>> m_AnimationDataBlobArrayAssetReference;
+
+
+    public void Execute(ref ActiveAnimation activeAnimation, ref MaterialMeshInfo materialMeshInfo)
+    {
+        if (activeAnimation.m_AnimationType == AnimationDataSO.AnimationType.SoldierAttack)
+        {
+            return;
+        }
+
+        if (activeAnimation.m_AnimationType == AnimationDataSO.AnimationType.ZombieMeleeAttack)
+        {
+            return;
+        }
+
+        if (activeAnimation.m_AnimationType != activeAnimation.m_NextAnimationType)
+        {
+            activeAnimation.m_Frame = 0;
+            activeAnimation.m_FrameTimer = 0f;
+            activeAnimation.m_AnimationType = activeAnimation.m_NextAnimationType;
+
+            //改mesh
+            ref AnimationData animationData = ref m_AnimationDataBlobArrayAssetReference.Value[(int)activeAnimation.m_AnimationType];
+            materialMeshInfo.MeshID = animationData.m_BatchMeshIdBlobArray[0];
+
+        }
+    }
+
+}
+
+
+
