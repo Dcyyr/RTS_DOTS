@@ -25,7 +25,7 @@ Transform:
   m_GameObject: {fileID: 2120075803960083970}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.069, y: 1.95, z: 0}
+  m_LocalPosition: {x: 0.069, y: 1.95, z: 0.95}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -66,7 +66,7 @@ PrefabInstance:
     - target: {fileID: 3511716258483507105, guid: 15f270f86165112458331d39752320e2, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 2100000, guid: e4ec87fdea78a1f48b6dd4e77917231f, type: 2}
+      objectReference: {fileID: 2100000, guid: ee10e08e512de0c4eb0cd4939380dc18, type: 2}
     - target: {fileID: 3950572864947028302, guid: 15f270f86165112458331d39752320e2, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -110,7 +110,7 @@ PrefabInstance:
     - target: {fileID: 4768008741565638177, guid: 15f270f86165112458331d39752320e2, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 2100000, guid: c196d92b75baf4448951bf5ace15c515, type: 2}
+      objectReference: {fileID: 2100000, guid: 85cd5279f313d294c8d4eb59ece3cb5b, type: 2}
     - target: {fileID: 6166725987932843383, guid: 15f270f86165112458331d39752320e2, type: 3}
       propertyPath: m_Faction
       value: 1
@@ -118,7 +118,7 @@ PrefabInstance:
     - target: {fileID: 7634893979288572709, guid: 15f270f86165112458331d39752320e2, type: 3}
       propertyPath: m_Mesh
       value: 
-      objectReference: {fileID: 4300000, guid: b6815ab17cf31b645b33d7e67d00ce14, type: 2}
+      objectReference: {fileID: 4300000, guid: e6545fad1f630fd4ca70447e93c50c0f, type: 2}
     - target: {fileID: 8750533490200415746, guid: 15f270f86165112458331d39752320e2, type: 3}
       propertyPath: m_Name
       value: ZombieUnit

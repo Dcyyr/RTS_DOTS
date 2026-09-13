@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 29669ddeafe36154888cfefb38c21813, type: 3}
+  m_Name: Zombie_MeleeAttack
+  m_EditorClassIdentifier: 
+  m_AnimationType: 7
+  m_MeshArray:
+  - {fileID: 4300000, guid: 31f9b39917df85347b5018d671a9676d, type: 2}
+  - {fileID: 4300000, guid: 079cd04a94498a0479d79276a8cf448d, type: 2}
+  - {fileID: 4300000, guid: 72a66477180fb9347b0caea76adbbd0a, type: 2}
+  - {fileID: 4300000, guid: d80153e37a6f6ea479d992623a6f8cc6, type: 2}
+  m_FrameTimerMax: 0.5
