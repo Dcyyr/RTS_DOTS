@@ -4,7 +4,7 @@ using UnityEngine;
 public class FindTargetAuthoring : MonoBehaviour
 {
     public float m_Range;
-    public Faction m_TargetFaction;
+    public FactionType m_TargetFaction;
     public float m_MaxTimer;
     public class Baker : Baker<FindTargetAuthoring>
     {
@@ -26,7 +26,7 @@ public class FindTargetAuthoring : MonoBehaviour
 public struct FindTarget : IComponentData
 {
     public float m_Range;
-    public Faction m_TargetFaction;
+    public FactionType m_TargetFaction;
 
     public float m_Timer;
     public float m_MaxTimer;

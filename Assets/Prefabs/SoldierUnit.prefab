@@ -149,6 +149,10 @@ PrefabInstance:
       propertyPath: m_TargetFaction
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 2920445322976638119, guid: 15f270f86165112458331d39752320e2, type: 3}
+      propertyPath: m_FactionType
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3317673765905881794, guid: 15f270f86165112458331d39752320e2, type: 3}
       propertyPath: m_AimAnimation
       value: 5

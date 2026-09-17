@@ -57,7 +57,7 @@ public class UnitSelectionManager : MonoBehaviour
             if (isMultipleSelection)
             {
                 entityQuery = new EntityQueryBuilder(Allocator.Temp)
-                    .WithAll<LocalTransform, Unit>()
+                    .WithAll<LocalTransform, Faction>()
                     .WithPresent<Selected>()//匹配有Selected组件的实体,不管启用还是禁用
                     .Build(entityManager);
 
@@ -97,7 +97,7 @@ public class UnitSelectionManager : MonoBehaviour
                     Filter = new CollisionFilter
                     {
                         BelongsTo = ~0u,
-                        CollidesWith = 1u << GameAssets.UNITS_LAYER,
+                        CollidesWith = 1u << GameAssets.UNITS_LAYER | 1u << GameAssets.BUILDINGS_LAYER,
                         GroupIndex = 0
 
                     }
@@ -144,7 +144,7 @@ public class UnitSelectionManager : MonoBehaviour
                 Filter = new CollisionFilter
                 {
                     BelongsTo = ~0u,
-                    CollidesWith = 1u << GameAssets.UNITS_LAYER,
+                    CollidesWith = 1u << GameAssets.UNITS_LAYER | 1u << GameAssets.BUILDINGS_LAYER,
                     GroupIndex = 0
 
                 }
@@ -154,11 +154,11 @@ public class UnitSelectionManager : MonoBehaviour
 
             if (collisionWorld.CastRay(raycastInput, out Unity.Physics.RaycastHit raycastHit))
             {
-                if (entityManager.HasComponent<Unit>(raycastHit.Entity))
+                if (entityManager.HasComponent<Faction>(raycastHit.Entity))
                 {   //选中单位
 
-                    Unit unit = entityManager.GetComponentData<Unit>(raycastHit.Entity);
-                    if (unit.m_Faction == Faction.Zombie)
+                    Faction targetFaction = entityManager.GetComponentData<Faction>(raycastHit.Entity);
+                    if (targetFaction.m_FactionType == FactionType.Zombie)
                     {
                         //鼠标点击僵尸,设置僵尸为点击实体
                         isAttackingSingleTarget = true;

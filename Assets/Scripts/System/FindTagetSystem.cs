@@ -40,7 +40,7 @@ partial struct FindTargetSystem : ISystem
             CollisionFilter collisionFilter = new CollisionFilter
             {
                 BelongsTo = ~0u,
-                CollidesWith = 1u << GameAssets.UNITS_LAYER,
+                CollidesWith = 1u << GameAssets.UNITS_LAYER | 1u << GameAssets.BUILDINGS_LAYER,
                 GroupIndex = 0
             };
 
@@ -63,12 +63,12 @@ partial struct FindTargetSystem : ISystem
                 foreach (DistanceHit distanceHit in distanceHitsList)
                 {
                     // 命中的实体可能没有 Unit 组件，先判断再读取，避免异常
-                    if (!SystemAPI.Exists(distanceHit.Entity) || !SystemAPI.HasComponent<Unit>(distanceHit.Entity))
+                    if (!SystemAPI.Exists(distanceHit.Entity) || !SystemAPI.HasComponent<Faction>(distanceHit.Entity))
                     {
                         continue;
                     }
-                    Unit unit = SystemAPI.GetComponent<Unit>(distanceHit.Entity);
-                    if (unit.m_Faction == findTarget.ValueRO.m_TargetFaction)
+                    Faction targetFaction = SystemAPI.GetComponent<Faction>(distanceHit.Entity);
+                    if (targetFaction.m_FactionType == findTarget.ValueRO.m_TargetFaction)
                     {   //最近的那个实体没有找到，让打中那个实体成最近的
                         if(closestTargetEntity == Entity.Null)
                         {

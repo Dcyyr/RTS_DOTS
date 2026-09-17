@@ -38,7 +38,6 @@ public partial struct ChangeAnimationJob : IJobEntity
             return;
         }
 
-        
 
         if (activeAnimation.m_AnimationType != activeAnimation.m_NextAnimationType)
         {
