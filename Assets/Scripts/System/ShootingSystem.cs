@@ -95,5 +95,65 @@ partial struct ShootingSystem : ISystem
             shoot.ValueRW.m_OnShoot.m_IsTriggered = true;
             shoot.ValueRW.m_OnShoot.m_ShootFromPosition = bulletSpawnWorldPos;
         }
+
+
+        foreach ((RefRW<LocalTransform> localTransform, RefRW<Shooting> shoot,
+            RefRO<Target> target, Entity entity) in
+            SystemAPI.Query<
+                RefRW<LocalTransform>,
+                RefRW<Shooting>,
+                RefRO<Target>>().WithEntityAccess())
+        {
+
+            if (target.ValueRO.m_TargetEntity == Entity.Null)
+            {
+                continue;
+            }
+
+            LocalTransform targetLocalTransform = SystemAPI.GetComponent<LocalTransform>(target.ValueRO.m_TargetEntity);
+
+
+            if (math.distance(localTransform.ValueRO.Position, targetLocalTransform.Position) > shoot.ValueRO.m_AttackDistance)
+            {
+                continue;
+            }
+
+            if(SystemAPI.HasComponent<MoveOverride>(entity) && SystemAPI.IsComponentEnabled<MoveOverride>(entity))
+            {
+                continue;
+            }
+
+            // 开火冷却：只有真正开火才消耗计时，转身过程不烧冷却
+            shoot.ValueRW.m_Timer -= SystemAPI.Time.DeltaTime;
+            if (shoot.ValueRW.m_Timer > 0f)
+            {
+                continue;
+            }
+            shoot.ValueRW.m_Timer = shoot.ValueRO.m_MaxTimer;
+
+            // 攻击敌人时，敌人反击（目标需要有 TargetOverride 组件）
+            if (SystemAPI.Exists(target.ValueRO.m_TargetEntity) &&
+                SystemAPI.HasComponent<TargetOverride>(target.ValueRO.m_TargetEntity))
+            {
+                RefRW<TargetOverride> enemyTargetOverride = SystemAPI.GetComponentRW<TargetOverride>(target.ValueRO.m_TargetEntity);
+                if (enemyTargetOverride.ValueRO.m_TargetEntity == Entity.Null)
+                {
+                    enemyTargetOverride.ValueRW.m_TargetEntity = entity;
+                }
+            }
+
+            Entity bulletEntity = state.EntityManager.Instantiate(entitiesReferences.m_BulletPrefabs);
+            float3 bulletSpawnWorldPos = localTransform.ValueRO.TransformPoint(shoot.ValueRO.m_BulletTransform);
+            SystemAPI.SetComponent(bulletEntity, LocalTransform.FromPosition(bulletSpawnWorldPos));
+
+            RefRW<Bullet> bullet = SystemAPI.GetComponentRW<Bullet>(bulletEntity);
+            bullet.ValueRW.m_Damage = shoot.ValueRO.m_ShootDamage;
+
+            RefRW<Target> bulletTarget = SystemAPI.GetComponentRW<Target>(bulletEntity);
+            bulletTarget.ValueRW.m_TargetEntity = target.ValueRO.m_TargetEntity;
+
+            shoot.ValueRW.m_OnShoot.m_IsTriggered = true;
+            shoot.ValueRW.m_OnShoot.m_ShootFromPosition = bulletSpawnWorldPos;
+        }
     }
 }
