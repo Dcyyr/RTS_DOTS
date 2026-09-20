@@ -123,6 +123,10 @@ PrefabInstance:
       propertyPath: m_Mesh
       value: 
       objectReference: {fileID: 4300000, guid: e6545fad1f630fd4ca70447e93c50c0f, type: 2}
+    - target: {fileID: 8407783636237320086, guid: 15f270f86165112458331d39752320e2, type: 3}
+      propertyPath: m_UnitType
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 8750533490200415746, guid: 15f270f86165112458331d39752320e2, type: 3}
       propertyPath: m_Name
       value: ZombieUnit

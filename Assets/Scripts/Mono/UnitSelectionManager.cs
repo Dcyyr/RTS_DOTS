@@ -105,7 +105,7 @@ public class UnitSelectionManager : MonoBehaviour
 
                 if (collisionWorld.CastRay(raycastInput, out Unity.Physics.RaycastHit raycastHit))
                 {
-                    if (entityManager.HasComponent<Unit>(raycastHit.Entity) && entityManager.HasComponent<Selected>(raycastHit.Entity))
+                    if (entityManager.HasComponent<Selected>(raycastHit.Entity))
                     {   //选中单位
                         entityManager.SetComponentEnabled<Selected>(raycastHit.Entity, true);
 
@@ -209,6 +209,25 @@ public class UnitSelectionManager : MonoBehaviour
                 entityQuery.CopyFromComponentDataArray(unitMoveOverrideArray);
                 entityQuery.CopyFromComponentDataArray(targetOverrideArray);//数组写回实体
             }
+
+            //处理兵营集中位置
+            entityQuery = new EntityQueryBuilder(Allocator.Temp).WithAll<Selected,BuildingBarracks,LocalTransform>().Build(entityManager);//只查"被选中"的单位
+
+
+            NativeArray<BuildingBarracks> buildingBarracksArray = entityQuery.ToComponentDataArray<BuildingBarracks>(Allocator.Temp);
+            NativeArray<LocalTransform> localTransformArray = entityQuery.ToComponentDataArray<LocalTransform>(Allocator.Temp);
+
+            for (int i = 0; i < buildingBarracksArray.Length; i++)
+            {
+                BuildingBarracks buildingBarracks = buildingBarracksArray[i];
+
+                buildingBarracks.m_RallyPositionOffset = (float3)mousePosition - localTransformArray[i].Position;
+                buildingBarracksArray[i] = buildingBarracks;
+
+            }
+
+
+            entityQuery.CopyFromComponentDataArray(buildingBarracksArray);
         }
     }
 

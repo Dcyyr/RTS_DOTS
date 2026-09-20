@@ -11,4 +11,6 @@ public class GameAssets : MonoBehaviour
     {
         Instance = this;
     }
+
+    public UnitTypeSOList m_UnitTypeSOList;
 }
