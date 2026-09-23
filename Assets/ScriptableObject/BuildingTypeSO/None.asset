@@ -13,3 +13,6 @@ MonoBehaviour:
   m_Name: None
   m_EditorClassIdentifier: 
   m_BuildingType: 0
+  m_Prefab: {fileID: 0}
+  m_ShowInBuildingPlacementManagerUI: 1
+  m_Sprite: {fileID: 10915, guid: 0000000000000000f000000000000000, type: 0}

@@ -18,19 +18,8 @@ public class BuildingBarracksAuthoring : MonoBehaviour
                 m_RallyPositionOffset = new float3(10, 0, 0),
             });
 
-            DynamicBuffer<SpawnUnitTypeBuffer> spawnUnitTypeBuffer = AddBuffer<SpawnUnitTypeBuffer>(entity);
-            spawnUnitTypeBuffer.Add(new SpawnUnitTypeBuffer
-            {
-                m_UnitType = UnitTypeSO.UnitType.Soldier,
-            });
-            spawnUnitTypeBuffer.Add(new SpawnUnitTypeBuffer
-            {
-                m_UnitType = UnitTypeSO.UnitType.Soldier,
-            });
-            spawnUnitTypeBuffer.Add(new SpawnUnitTypeBuffer
-            {
-                m_UnitType = UnitTypeSO.UnitType.Scout,
-            });
+           AddBuffer<SpawnUnitTypeBuffer>(entity);
+         
         }
     }
 

@@ -14,6 +14,7 @@ public class UnitTypeSO : ScriptableObject
     public UnitType m_UnitType;
 
     public float m_ProgressMax;
+    public Sprite m_Sprite;
 
     public Entity GetPrefabEntities(EntitiesReferences entitiesReference)
     {

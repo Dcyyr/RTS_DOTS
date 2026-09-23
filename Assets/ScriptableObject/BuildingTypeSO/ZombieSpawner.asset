@@ -13,3 +13,4 @@ MonoBehaviour:
   m_Name: ZombieSpawner
   m_EditorClassIdentifier: 
   m_BuildingType: 1
+  m_Prefab: {fileID: 205436846529331053, guid: 15b90ba5cb4142740a342990cd379e55, type: 3}

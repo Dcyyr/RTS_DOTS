@@ -14,3 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_UnitType: 3
   m_ProgressMax: 1
+  m_Sprite: {fileID: 21300000, guid: 39026cee7234d0f4f9908596da62062d, type: 3}

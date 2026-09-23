@@ -1,10 +1,11 @@
-﻿using Unity.Burst;
+﻿﻿using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Physics;
 using Unity.Transforms;
 
+[UpdateAfter(typeof(FixedStepSimulationSystemGroup))]
 partial struct MeleeAttackSystem : ISystem
 {
 

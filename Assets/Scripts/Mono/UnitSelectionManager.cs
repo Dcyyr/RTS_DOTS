@@ -5,6 +5,7 @@ using Unity.Mathematics;
 using Unity.Physics;
 using Unity.Transforms;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class UnitSelectionManager : MonoBehaviour
 {
@@ -17,9 +18,21 @@ public class UnitSelectionManager : MonoBehaviour
     public event EventHandler OnMouseSelectionAreaStart;
     public event EventHandler OnMouseSelectionAreaEnd;
 
+    public event EventHandler OnSelectedEntitiesChanged;
+
     private Vector2 m_MouseStartPos;
     private void Update()
     {
+        //UI在上层时不会在点击UI误认为是别的层
+        if(EventSystem.current.IsPointerOverGameObject())
+        {
+            return;
+        }
+
+        if(!BuildingPlacementManager.Instance.GetActiveBuildingTypeSO().IsNone())
+        {
+            return;
+        }
 
         if (Input.GetMouseButtonDown(0))
         {
@@ -118,6 +131,7 @@ public class UnitSelectionManager : MonoBehaviour
             }
 
             OnMouseSelectionAreaEnd?.Invoke(this, EventArgs.Empty);
+            OnSelectedEntitiesChanged?.Invoke(this, EventArgs.Empty);
 
         }
 

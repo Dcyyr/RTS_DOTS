@@ -13,4 +13,5 @@ public class GameAssets : MonoBehaviour
     }
 
     public UnitTypeSOList m_UnitTypeSOList;
+    public BuildingTypeSOList m_BuildingTypeSOList;
 }

@@ -6,6 +6,7 @@ public class BuildingTypeSOList : ScriptableObject
 {
     public List<BuildingTypeSO> m_BuildingTypeSOList;
 
+    public BuildingTypeSO m_None;
     public BuildingTypeSO GetBuildingTypeSO(BuildingTypeSO.BuildingType buildingType)
     {
         foreach(BuildingTypeSO buildingTypeSO in m_BuildingTypeSOList)
