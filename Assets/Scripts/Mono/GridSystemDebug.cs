@@ -1,4 +1,5 @@
 using Unity.Entities;
+using Unity.Mathematics;
 using UnityEngine;
 
 public class GridSystemDebug : MonoBehaviour
@@ -7,6 +8,11 @@ public class GridSystemDebug : MonoBehaviour
 
     [SerializeField]
     private Transform m_DebugPrefab;
+
+    [SerializeField]
+    private Sprite m_ArrowSprite;
+    [SerializeField]
+    private Sprite m_CriclePrefab;
 
     private GridSystemDebugPrefab[,] m_GridSystemDebugPrefabArray;
 
@@ -54,6 +60,19 @@ public class GridSystemDebug : MonoBehaviour
                 Entity gridNodeEntity = gridSystemData.m_GridMap.m_GridEntityArray[index];
                 GridSystem.GridNode gridNode = entityManager.GetComponentData<GridSystem.GridNode>(gridNodeEntity);
                 
+                if(gridNode.m_Cost == 0)
+                {
+                    gridSystemDebugPrefab.SetSprite(m_CriclePrefab);
+                    gridSystemDebugPrefab.SetColor(Color.green);
+                }
+                else
+                {
+                    gridSystemDebugPrefab.SetSprite(m_ArrowSprite);
+                    gridSystemDebugPrefab.SetColor(Color.white);
+                    // 箭头朝向 = 流场向量 m_Vector（不是节点坐标 x！）
+                    gridSystemDebugPrefab.SetSpriteRotation(Quaternion.LookRotation(new float3(gridNode.m_Vector.x, 0, gridNode.m_Vector.y), Vector3.up));
+                }
+
                 //gridSystemDebugPrefab.SetColor(gridNode.m_Data == 0 ? Color.white : Color.blue);
             }
         }

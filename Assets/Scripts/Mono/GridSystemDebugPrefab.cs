@@ -22,5 +22,16 @@ public class GridSystemDebugPrefab : MonoBehaviour
         m_SpriteRenderer.color = color;
     }
 
+    public void SetSprite(Sprite sprite)
+    {
+        m_SpriteRenderer.sprite = sprite;
+    }
+
+    public void SetSpriteRotation(Quaternion rotation)
+    {
+        m_SpriteRenderer.transform.rotation = rotation;
+        m_SpriteRenderer.transform.rotation *= Quaternion.Euler(90, 0, 90);
+    }
+
 
 }

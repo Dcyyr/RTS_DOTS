@@ -1,4 +1,4 @@
-#define GRID_DEBUG
+﻿#define GRID_DEBUG
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
@@ -33,6 +33,8 @@ public partial struct GridSystem : ISystem
         public byte m_BestCost;
         public float2 m_Vector;
     }
+    private int2 targetGridPosition;
+
 #if !GRID_DEBUG
     [BurstCompile]
 #endif
@@ -91,7 +93,6 @@ public partial struct GridSystem : ISystem
     {
         GridSystemData gridSystemData = SystemAPI.GetComponent<GridSystemData>(state.SystemHandle);
 
-        int2 targetGridPosition = new int2(2, 1);
 
         NativeArray<RefRW<GridNode>> gridNodeNativeArray = new NativeArray<RefRW<GridNode>>(gridSystemData.m_Width * gridSystemData.m_Height, Allocator.Temp);
 
@@ -121,11 +122,11 @@ public partial struct GridSystem : ISystem
 
         NativeQueue<RefRW<GridNode>> gridNodeQueue = new NativeQueue<RefRW<GridNode>>(Allocator.Temp);
 
-        RefRW<GridNode> targetGridNode = gridNodeNativeArray[CalculateIndex(targetGridPosition.x, targetGridPosition.y, gridSystemData.m_Width)];
+        RefRW<GridNode> targetGridNode = gridNodeNativeArray[CalculateIndex(targetGridPosition, gridSystemData.m_Width)];
         gridNodeQueue.Enqueue(targetGridNode);
 
 
-        int safety = 1000;//ȡ����width��height�ĳ˻�
+        int safety = gridSystemData.m_Width * gridSystemData.m_Height * 8;//取决于width和height的乘积
         while(gridNodeQueue.Count >0)
         {
             safety--;
@@ -142,13 +143,16 @@ public partial struct GridSystem : ISystem
 
             foreach(RefRW<GridNode> neighbourGridNode in neighbourGridNodeList)
             {
-                byte newBestCost = (byte)(neighbourGridNode.ValueRW.m_BestCost + neighbourGridNode.ValueRW.m_Cost);
+                byte newBestCost = (byte)(currentGridNode.ValueRO.m_BestCost + neighbourGridNode.ValueRO.m_Cost);
 
                 if(newBestCost < neighbourGridNode.ValueRO.m_BestCost)
                 {
                     neighbourGridNode.ValueRW.m_BestCost = newBestCost;
                     neighbourGridNode.ValueRW.m_Vector =
                         CalculateVector(neighbourGridNode.ValueRO.x, neighbourGridNode.ValueRO.y, currentGridNode.ValueRO.x, currentGridNode.ValueRO.y);
+
+                    // 关键：代价变好就重新入队，流场才能扩散到整张地图
+                    gridNodeQueue.Enqueue(neighbourGridNode);
                 }
 
             }
@@ -170,7 +174,7 @@ public partial struct GridSystem : ISystem
                 Entity entity = gridSystemData.m_GridMap.m_GridEntityArray[index];
 
                 RefRW<GridNode> gridNode = SystemAPI.GetComponentRW<GridNode>(entity);
-                Debug.Log(gridNode.ValueRO.m_Vector);
+                targetGridPosition = mouseGridPosition;
             }
         }
 #if GRID_DEBUG
