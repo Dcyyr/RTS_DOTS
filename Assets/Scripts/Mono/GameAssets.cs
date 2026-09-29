@@ -6,6 +6,7 @@ public class GameAssets : MonoBehaviour
 
     public const int UNITS_LAYER = 6;
     public const int BUILDINGS_LAYER = 7;
+    public const int PATHFINDING_WALL = 8;
 
     private void Awake()
     {

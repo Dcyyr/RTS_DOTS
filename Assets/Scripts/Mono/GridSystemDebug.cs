@@ -1,5 +1,6 @@
 using Unity.Entities;
 using Unity.Mathematics;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 public class GridSystemDebug : MonoBehaviour
@@ -67,11 +68,20 @@ public class GridSystemDebug : MonoBehaviour
                 }
                 else
                 {
-                    gridSystemDebugPrefab.SetSprite(m_ArrowSprite);
-                    gridSystemDebugPrefab.SetColor(Color.white);
-                    // 箭头朝向 = 流场向量 m_Vector（不是节点坐标 x！）
-                    gridSystemDebugPrefab.SetSpriteRotation(Quaternion.LookRotation(new float3(gridNode.m_Vector.x, 0, gridNode.m_Vector.y), Vector3.up));
+                    if(gridNode.m_Cost == GridSystem.WALL_COST)
+                    {
+                        gridSystemDebugPrefab.SetSprite(m_CriclePrefab);
+                        gridSystemDebugPrefab.SetColor(Color.black);
+                    }
+                    else
+                    {
+                        gridSystemDebugPrefab.SetSprite(m_ArrowSprite);
+                        gridSystemDebugPrefab.SetColor(Color.white);
+                        // 箭头朝向 = 流场向量 m_Vector（不是节点坐标 x！）
+                        gridSystemDebugPrefab.SetSpriteRotation(Quaternion.LookRotation(new float3(gridNode.m_Vector.x, 0, gridNode.m_Vector.y), Vector3.up));
+                    }
                 }
+               
 
                 //gridSystemDebugPrefab.SetColor(gridNode.m_Data == 0 ? Color.white : Color.blue);
             }

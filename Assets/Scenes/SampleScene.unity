@@ -536,6 +536,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_DebugPrefab: {fileID: 7510666072663339916, guid: 5fba570a736cffa45b0cc59b39158888, type: 3}
+  m_ArrowSprite: {fileID: 21300000, guid: 0aac3aa6f7b72684cad566015dc5f233, type: 3}
+  m_CriclePrefab: {fileID: 21300000, guid: 727d8de889c45c74aa8b65ce95ec143a, type: 3}
 --- !u!4 &380971569
 Transform:
   m_ObjectHideFlags: 0
