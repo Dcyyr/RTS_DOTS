@@ -54,7 +54,7 @@ public class GridSystemDebug : MonoBehaviour
                 Entity gridNodeEntity = gridSystemData.m_GridMap.m_GridEntityArray[index];
                 GridSystem.GridNode gridNode = entityManager.GetComponentData<GridSystem.GridNode>(gridNodeEntity);
                 
-                gridSystemDebugPrefab.SetColor(gridNode.m_Data == 0 ? Color.white : Color.blue);
+                //gridSystemDebugPrefab.SetColor(gridNode.m_Data == 0 ? Color.white : Color.blue);
             }
         }
 
