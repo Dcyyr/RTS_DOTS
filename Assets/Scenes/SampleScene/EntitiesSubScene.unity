@@ -578,13 +578,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: SoldierUnit
       objectReference: {fileID: 0}
+    - target: {fileID: 8091393200930440119, guid: a49adac3bea7f8f42a75947788c84858, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 8091393200930440119, guid: a49adac3bea7f8f42a75947788c84858, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 905476439}
     - targetCorrespondingSourceObject: {fileID: 8327770751366349930, guid: a49adac3bea7f8f42a75947788c84858, type: 3}
       insertIndex: -1
       addedObject: {fileID: 787383152}
@@ -620,45 +621,11 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 9182309987559482199, guid: 971ecdac3f7d91f4bbaca5080131a34c, type: 3}
   m_PrefabInstance: {fileID: 1214037510}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &905476426 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 8091393200930440119, guid: a49adac3bea7f8f42a75947788c84858, type: 3}
-  m_PrefabInstance: {fileID: 714560675}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &905476439
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 905476426}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5856951e4810a43499006e2b5e728ba3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!4 &919036576 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 400000, guid: 19d86961dae3cd447b1d8176deafd8e9, type: 3}
   m_PrefabInstance: {fileID: 953540193}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &935356906 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 8091393200930440119, guid: a49adac3bea7f8f42a75947788c84858, type: 3}
-  m_PrefabInstance: {fileID: 1714863379}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &935356919
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 935356906}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5856951e4810a43499006e2b5e728ba3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1001 &953540193
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -804,13 +771,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: SoldierUnit
       objectReference: {fileID: 0}
+    - target: {fileID: 8091393200930440119, guid: a49adac3bea7f8f42a75947788c84858, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 8091393200930440119, guid: a49adac3bea7f8f42a75947788c84858, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1968315438}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a49adac3bea7f8f42a75947788c84858, type: 3}
 --- !u!1001 &1214037510
 PrefabInstance:
@@ -933,13 +901,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: SoldierUnit
       objectReference: {fileID: 0}
+    - target: {fileID: 8091393200930440119, guid: a49adac3bea7f8f42a75947788c84858, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 8091393200930440119, guid: a49adac3bea7f8f42a75947788c84858, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 935356919}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a49adac3bea7f8f42a75947788c84858, type: 3}
 --- !u!1001 &1732125950
 PrefabInstance:
@@ -964,6 +933,10 @@ PrefabInstance:
     - target: {fileID: 2512959970620708458, guid: d127a6cd0c72d6a4f99f98bb096eb63d, type: 3}
       propertyPath: m_Name
       value: ZombieUnit
+      objectReference: {fileID: 0}
+    - target: {fileID: 2512959970620708458, guid: d127a6cd0c72d6a4f99f98bb096eb63d, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2827250799279513917, guid: d127a6cd0c72d6a4f99f98bb096eb63d, type: 3}
       propertyPath: m_NextAnimationType
@@ -1107,6 +1080,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: SoldierUnit
       objectReference: {fileID: 0}
+    - target: {fileID: 8091393200930440119, guid: a49adac3bea7f8f42a75947788c84858, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1163,23 +1140,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1968315425 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 8091393200930440119, guid: a49adac3bea7f8f42a75947788c84858, type: 3}
-  m_PrefabInstance: {fileID: 1016634906}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &1968315438
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1968315425}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5856951e4810a43499006e2b5e728ba3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &2023596299 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 369782527025335400, guid: a49adac3bea7f8f42a75947788c84858, type: 3}
@@ -1495,6 +1455,10 @@ PrefabInstance:
     - target: {fileID: 3318394845312169173, guid: 15b90ba5cb4142740a342990cd379e55, type: 3}
       propertyPath: m_Name
       value: ZombieSpawnerBuilding
+      objectReference: {fileID: 0}
+    - target: {fileID: 3318394845312169173, guid: 15b90ba5cb4142740a342990cd379e55, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8184507519601001410, guid: 15b90ba5cb4142740a342990cd379e55, type: 3}
       propertyPath: m_MaxTimer

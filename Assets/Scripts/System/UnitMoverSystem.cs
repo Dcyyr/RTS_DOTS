@@ -8,8 +8,49 @@ partial struct UnitMoverSystem : ISystem
 {
 
     public const float REACHED_TARGET_DISTANCE = 2f;
+
+    [BurstCompile]
+    public void OnCreate(ref SystemState state)
+    {
+        state.RequireForUpdate<GridSystem.GridSystemData>();
+    }
+
     public void OnUpdate(ref SystemState state)
     {
+        GridSystem.GridSystemData gridSystem = SystemAPI.GetSingleton<GridSystem.GridSystemData>();
+
+        foreach((RefRO<LocalTransform> localTransform ,RefRW<FlowFieldFollower> flowFieldFollower, EnabledRefRW<FlowFieldFollower> flowFieldFollowerEnable,RefRW < UnitMover> unitMover) 
+            in SystemAPI.Query<RefRO<LocalTransform>,RefRW<FlowFieldFollower>, EnabledRefRW<FlowFieldFollower>,RefRW <UnitMover>>())
+        {
+            int2 gridPosition = GridSystem.GetGridPosition(localTransform.ValueRO.Position, gridSystem.m_GridNodeSize);
+            int index = GridSystem.CalculateIndex(gridPosition, gridSystem.m_Width);
+            Entity gridSystemDataEntity = gridSystem.m_GridMapArray[flowFieldFollower.ValueRO.m_GridIndex].m_GridEntityArray[index];
+            GridSystem.GridNode gridNode = SystemAPI.GetComponent<GridSystem.GridNode>(gridSystemDataEntity);
+
+            float3 gridNodeMoveVector = GridSystem.GetWorldMovementVector(gridNode.m_Vector);
+
+            if(GridSystem.IsWall(gridNode))
+            {
+                gridNodeMoveVector = flowFieldFollower.ValueRO.m_LastMoveVector;
+            }
+            else
+            {
+                flowFieldFollower.ValueRW.m_LastMoveVector = gridNodeMoveVector;
+            }
+
+            unitMover.ValueRW.m_TargetPosition = GridSystem.GetWorldCenterPosition(gridPosition.x, gridPosition.y, gridSystem.m_GridNodeSize)
+                    + gridNodeMoveVector
+                    * (gridSystem.m_GridNodeSize * 1f);
+
+            if(math.distance(localTransform.ValueRO.Position,flowFieldFollower.ValueRO.m_TargetPosition) < gridSystem.m_GridNodeSize)
+            {
+                unitMover.ValueRW.m_TargetPosition = localTransform.ValueRO.Position;
+                flowFieldFollowerEnable.ValueRW = false;
+            }
+        }
+
+
+
         UnitMoverJob unitMoverJob = new UnitMoverJob
         {
             delteTime = SystemAPI.Time.DeltaTime
