@@ -24,6 +24,8 @@ public partial struct GridSystem : ISystem
     public struct GridMap
     {
         public NativeArray<Entity> m_GridEntityArray;
+        public int2 m_TargetGridPosition;
+        public bool m_IsValid;
     }
 
     public struct GridNode :IComponentData
@@ -57,6 +59,7 @@ public partial struct GridSystem : ISystem
         for (int i = 0; i < FLOW_FIELDMAP_COUNT; i++)
         {
             GridMap gridMap = new GridMap();
+            gridMap.m_IsValid = false;//初始化为false，只有在计算流场的时候才会设置为true
             gridMap.m_GridEntityArray = new NativeArray<Entity>(totalCount, Allocator.Persistent);
 
             state.EntityManager.Instantiate(gridNodeEntity, gridMap.m_GridEntityArray);
@@ -110,6 +113,26 @@ public partial struct GridSystem : ISystem
             int2 targetGridPosition = GetGridPosition(flowFieldPathRequest.ValueRO.m_TargetPosition, gridSystemData.m_GridNodeSize);
 
             flowFieldPathRequestEnable.ValueRW = false;
+
+            
+            bool isAlreadyCalculated = false;
+            for (int i = 0; i < FLOW_FIELDMAP_COUNT; i++) 
+            {
+                if (gridSystemData.m_GridMapArray[i].m_IsValid && gridSystemData.m_GridMapArray[i].m_TargetGridPosition.Equals(targetGridPosition))
+                {
+                    flowFieldFollower.ValueRW.m_GridIndex = i;
+                    flowFieldFollower.ValueRW.m_TargetPosition = flowFieldPathRequest.ValueRO.m_TargetPosition;
+                    flowFieldFollowerEnable.ValueRW = true;
+                    isAlreadyCalculated = true;
+                    break;
+                }
+            }
+
+            if(isAlreadyCalculated)
+            {
+                //已经计算过了，就不需要再计算了，直接使用之前的流场数据
+                continue;
+            }
 
             //选择一个单位都要重新计算流场，所以每次都要切换一个gridmap
             int gridIndex = gridSystemData.m_NextGridIndex;
@@ -222,6 +245,13 @@ public partial struct GridSystem : ISystem
 
             gridNodeQueue.Dispose();
             gridNodeNativeArray.Dispose();
+
+            GridMap gridMap = gridSystemData.m_GridMapArray[gridIndex];
+            gridMap.m_TargetGridPosition = targetGridPosition;
+            gridMap.m_IsValid = true;
+            gridSystemData.m_GridMapArray[gridIndex] = gridMap;
+
+            SystemAPI.SetComponent(state.SystemHandle, gridSystemData);
         }
 
 
@@ -239,12 +269,6 @@ public partial struct GridSystem : ISystem
             }
 
 
-            //foreach((RefRW<FlowFieldFollower> flowFieldFollower, EnabledRefRW <FlowFieldFollower> flowFieldFollowerEnable)in 
-            //    SystemAPI.Query<RefRW<FlowFieldFollower>, EnabledRefRW<FlowFieldFollower>>().WithPresent<FlowFieldFollower>())
-            //{
-            //    flowFieldFollower.ValueRW.m_TargetPosition = mouseWorldPosition;
-            //    flowFieldFollowerEnable.ValueRW = true;
-            //}
         }
 #if GRID_DEBUG
         GridSystemDebug.instance?.InitizlizeGrid(gridSystemData);

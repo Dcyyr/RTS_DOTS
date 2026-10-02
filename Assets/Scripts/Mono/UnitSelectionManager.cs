@@ -199,12 +199,13 @@ public class UnitSelectionManager : MonoBehaviour
 
             if (!isAttackingSingleTarget)
             {
-                entityQuery = new EntityQueryBuilder(Allocator.Temp).WithAll<Selected>().WithPresent<MoveOverride, TargetOverride,FlowFieldPathRequest>().Build(entityManager);//只查"被选中"的单位
+                entityQuery = new EntityQueryBuilder(Allocator.Temp).WithAll<Selected>().WithPresent<MoveOverride, TargetOverride,FlowFieldPathRequest
+                    ,TargetPositionPathQueued,FlowFieldFollower>().Build(entityManager);//只查"被选中"的单位
 
                 NativeArray<Entity> entityArray = entityQuery.ToEntityArray(Allocator.Temp);
                 NativeArray<MoveOverride> unitMoveOverrideArray = entityQuery.ToComponentDataArray<MoveOverride>(Allocator.Temp);
                 NativeArray<TargetOverride> targetOverrideArray = entityQuery.ToComponentDataArray<TargetOverride>(Allocator.Temp);
-                NativeArray<FlowFieldPathRequest> flowFieldPathRequestArray = entityQuery.ToComponentDataArray<FlowFieldPathRequest>(Allocator.Temp);
+                NativeArray<TargetPositionPathQueued> TargetPositionPathQueuedArray = entityQuery.ToComponentDataArray<TargetPositionPathQueued>(Allocator.Temp);
 
                 NativeArray<float3> movePositionArray = GenerateMovePositionArray(mousePosition, entityArray.Length);
                 for (int i = 0; i < unitMoveOverrideArray.Length; i++)
@@ -219,16 +220,20 @@ public class UnitSelectionManager : MonoBehaviour
                     targetOverride.m_TargetEntity = Entity.Null;//改副本（右键地面/自己人时没有攻击目标，写成命中的友军会导致单位攻击自己 → NaN → 消失）
                     targetOverrideArray[i] = targetOverride;//写回数组
 
-                    FlowFieldPathRequest flowFieldPathRequest = flowFieldPathRequestArray[i];
-                    flowFieldPathRequest.m_TargetPosition = movePositionArray[i];//改副本
-                    flowFieldPathRequestArray[i] = flowFieldPathRequest;//写回数组
-                    entityManager.SetComponentEnabled<FlowFieldPathRequest>(entityArray[i], true);//启用MoveOverride组件
+                    TargetPositionPathQueued TargetPositionPathQueued = TargetPositionPathQueuedArray[i];
+                    TargetPositionPathQueued.m_TargetPosition = movePositionArray[i];//改副本
+                    TargetPositionPathQueuedArray[i] = TargetPositionPathQueued;//写回数组
+                    entityManager.SetComponentEnabled<TargetPositionPathQueued>(entityArray[i], true);//启用MoveOverride组件
+
+                    entityManager.SetComponentEnabled<FlowFieldPathRequest>(entityArray[i], false);//启用MoveOverride组件
+                    entityManager.SetComponentEnabled<FlowFieldFollower>(entityArray[i], false);//启用MoveOverride组件
+
                 }
 
 
                 entityQuery.CopyFromComponentDataArray(unitMoveOverrideArray);
                 entityQuery.CopyFromComponentDataArray(targetOverrideArray);//数组写回实体
-                entityQuery.CopyFromComponentDataArray(flowFieldPathRequestArray);//数组写回实体
+                entityQuery.CopyFromComponentDataArray(TargetPositionPathQueuedArray);//数组写回实体
             }
 
             //处理兵营集中位置

@@ -1330,7 +1330,7 @@ BoxCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
@@ -1343,7 +1343,7 @@ MeshRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2118926693}
-  m_Enabled: 0
+  m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
@@ -1399,7 +1399,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -0.08, y: 0.3993, z: 0.43}
-  m_LocalScale: {x: 6.64, y: 0.45467317, z: 6.734915}
+  m_LocalScale: {x: 15.48, y: 1.0599911, z: 15.701277}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 1787235949}
@@ -1452,13 +1452,17 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1257579616871236104, guid: 15b90ba5cb4142740a342990cd379e55, type: 3}
+      propertyPath: m_FactionType
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3318394845312169173, guid: 15b90ba5cb4142740a342990cd379e55, type: 3}
       propertyPath: m_Name
       value: ZombieSpawnerBuilding
       objectReference: {fileID: 0}
     - target: {fileID: 3318394845312169173, guid: 15b90ba5cb4142740a342990cd379e55, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8184507519601001410, guid: 15b90ba5cb4142740a342990cd379e55, type: 3}
       propertyPath: m_MaxTimer

@@ -2,6 +2,7 @@ using Unity.Burst;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Physics;
+using Unity.Rendering;
 using Unity.Transforms;
 
 partial struct UnitMoverSystem : ISystem
@@ -19,7 +20,48 @@ partial struct UnitMoverSystem : ISystem
     {
         GridSystem.GridSystemData gridSystem = SystemAPI.GetSingleton<GridSystem.GridSystemData>();
 
-        foreach((RefRO<LocalTransform> localTransform ,RefRW<FlowFieldFollower> flowFieldFollower, EnabledRefRW<FlowFieldFollower> flowFieldFollowerEnable,RefRW < UnitMover> unitMover) 
+        PhysicsWorldSingleton physicsWorldSingleton = SystemAPI.GetSingleton<PhysicsWorldSingleton>();
+        CollisionWorld collisionWorld = physicsWorldSingleton.CollisionWorld;
+
+        //检测什么时候需要寻路，什么时候不需要寻路，什么时候直接移动
+        foreach ((RefRO<LocalTransform> localTransform,
+            RefRW<TargetPositionPathQueued> targetPositionPathQueued, 
+            EnabledRefRW<TargetPositionPathQueued> targetPositionPathQueuedEnable,
+            RefRW <FlowFieldPathRequest> flowFieldPathRequest,
+            EnabledRefRW<FlowFieldPathRequest> flowFieldPathRequestEnable,
+            RefRW <UnitMover> unitMover)
+           in SystemAPI.Query<RefRO<LocalTransform>, RefRW<TargetPositionPathQueued>, EnabledRefRW<TargetPositionPathQueued>, RefRW<FlowFieldPathRequest>, EnabledRefRW<FlowFieldPathRequest>, RefRW <UnitMover>>()
+           .WithPresent<FlowFieldPathRequest>())
+        {
+
+            RaycastInput raycastInput  = new RaycastInput
+            {
+                Start = localTransform.ValueRO.Position,
+                End = targetPositionPathQueued.ValueRO.m_TargetPosition,
+                Filter = new CollisionFilter
+                {
+                    BelongsTo = ~0u,
+                    CollidesWith = 1u << GameAssets.PATHFINDING_WALL,
+                    GroupIndex = 0
+                }
+            };
+            if(!collisionWorld.CastRay(raycastInput))
+            {
+                unitMover.ValueRW.m_TargetPosition = targetPositionPathQueued.ValueRO.m_TargetPosition;
+            }
+            else
+            {
+                flowFieldPathRequest.ValueRW.m_TargetPosition = targetPositionPathQueued.ValueRO.m_TargetPosition;
+                flowFieldPathRequestEnable.ValueRW = true;
+            }
+
+
+            targetPositionPathQueuedEnable.ValueRW = false;
+        }
+
+
+
+            foreach ((RefRO<LocalTransform> localTransform ,RefRW<FlowFieldFollower> flowFieldFollower, EnabledRefRW<FlowFieldFollower> flowFieldFollowerEnable,RefRW < UnitMover> unitMover) 
             in SystemAPI.Query<RefRO<LocalTransform>,RefRW<FlowFieldFollower>, EnabledRefRW<FlowFieldFollower>,RefRW <UnitMover>>())
         {
             int2 gridPosition = GridSystem.GetGridPosition(localTransform.ValueRO.Position, gridSystem.m_GridNodeSize);
@@ -47,6 +89,25 @@ partial struct UnitMoverSystem : ISystem
                 unitMover.ValueRW.m_TargetPosition = localTransform.ValueRO.Position;
                 flowFieldFollowerEnable.ValueRW = false;
             }
+
+            //检测什么时候需要寻路，什么时候不需要寻路，什么时候直接移动
+            RaycastInput raycastInput = new RaycastInput
+            {
+                Start = localTransform.ValueRO.Position,
+                End = flowFieldFollower.ValueRO.m_TargetPosition,
+                Filter = new CollisionFilter
+                {
+                    BelongsTo = ~0u,
+                    CollidesWith = 1u << GameAssets.PATHFINDING_WALL,
+                    GroupIndex = 0
+                }
+            };
+            if (!collisionWorld.CastRay(raycastInput))
+            {
+                unitMover.ValueRW.m_TargetPosition = flowFieldFollower.ValueRO.m_TargetPosition;
+                flowFieldFollowerEnable.ValueRW = false;
+            }
+           
         }
 
 

@@ -1,4 +1,4 @@
-using Unity.Burst;
+﻿﻿using Unity.Burst;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
@@ -106,6 +106,12 @@ partial struct ShootingSystem : ISystem
         {
 
             if (target.ValueRO.m_TargetEntity == Entity.Null)
+            {
+                continue;
+            }
+            // 目标已销毁或没有 LocalTransform 时跳过，避免系统崩溃（第二个循环原来漏了这段）
+            if (!SystemAPI.Exists(target.ValueRO.m_TargetEntity) ||
+                !SystemAPI.HasComponent<LocalTransform>(target.ValueRO.m_TargetEntity))
             {
                 continue;
             }
