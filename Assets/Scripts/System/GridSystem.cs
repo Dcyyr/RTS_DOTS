@@ -246,6 +246,7 @@ public partial struct GridSystem : ISystem
             gridNodeQueue.Dispose();
             gridNodeNativeArray.Dispose();
 
+            //
             GridMap gridMap = gridSystemData.m_GridMapArray[gridIndex];
             gridMap.m_TargetGridPosition = targetGridPosition;
             gridMap.m_IsValid = true;

@@ -9,8 +9,9 @@ partial struct RandomWalkSystem : ISystem
     [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
-        foreach((RefRW<RandomWalk> RandomWalk,RefRW<UnitMover> unitMover,RefRO<LocalTransform> localTransform)in
-            SystemAPI.Query<RefRW<RandomWalk>,RefRW<UnitMover>,RefRO<LocalTransform>>())
+        foreach((RefRW<RandomWalk> RandomWalk,RefRW<UnitMover> unitMover,RefRO<LocalTransform> localTransform, RefRW<TargetPositionPathQueued> targetPositionPathQueued,
+            EnabledRefRW<TargetPositionPathQueued> targetPositionPathQueuedEnable) in
+            SystemAPI.Query<RefRW<RandomWalk>,RefRW<UnitMover>,RefRO<LocalTransform>, RefRW<TargetPositionPathQueued>, EnabledRefRW<TargetPositionPathQueued>>())
         {
             if(math.distancesq(localTransform.ValueRO.Position,RandomWalk.ValueRO.m_TargetPosition) < UnitMoverSystem.REACHED_TARGET_DISTANCE)
             {
@@ -28,7 +29,8 @@ partial struct RandomWalkSystem : ISystem
             }
             else
             {
-                unitMover.ValueRW.m_TargetPosition = RandomWalk.ValueRO.m_TargetPosition;
+                targetPositionPathQueued.ValueRW.m_TargetPosition = RandomWalk.ValueRO.m_TargetPosition;
+                targetPositionPathQueuedEnable.ValueRW = true;
             }
         }
 

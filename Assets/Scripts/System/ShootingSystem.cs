@@ -17,12 +17,15 @@ partial struct ShootingSystem : ISystem
         EntitiesReferences entitiesReferences = SystemAPI.GetSingleton<EntitiesReferences>();
 
         foreach ((RefRW<LocalTransform> localTransform, RefRW<Shooting> shoot,
-            RefRO<Target> target, RefRW<UnitMover> unitMover, Entity entity) in
+            RefRO<Target> target, RefRW<TargetPositionPathQueued> targetPositionPathQueued,
+            EnabledRefRW<TargetPositionPathQueued> targetPositionPathQueuedEnable, RefRW<UnitMover> unitMover, Entity entity) in
             SystemAPI.Query<
                 RefRW<LocalTransform>,
                 RefRW<Shooting>,
                 RefRO<Target>,
-                RefRW<UnitMover>>().WithDisabled<MoveOverride>().WithEntityAccess())
+                RefRW<TargetPositionPathQueued> ,
+                EnabledRefRW<TargetPositionPathQueued>,
+                RefRW <UnitMover>>().WithDisabled<MoveOverride>().WithPresent<TargetPositionPathQueued>().WithEntityAccess())
         {
 
             if (target.ValueRO.m_TargetEntity == Entity.Null)
@@ -40,12 +43,15 @@ partial struct ShootingSystem : ISystem
             if (math.distance(localTransform.ValueRO.Position, targetLocalTransform.Position) > shoot.ValueRO.m_AttackDistance)
             {
                 // 目标超出攻击范围，走过去（走路时 UnitMoverJob 会面向移动方向）
-                unitMover.ValueRW.m_TargetPosition = targetLocalTransform.Position;
+                targetPositionPathQueued.ValueRW.m_TargetPosition = targetLocalTransform.Position;
+                targetPositionPathQueuedEnable.ValueRW = true;
                 continue;
             }
             else
             {
-                unitMover.ValueRW.m_TargetPosition = localTransform.ValueRO.Position;
+                targetPositionPathQueued.ValueRW.m_TargetPosition = localTransform.ValueRO.Position;
+                targetPositionPathQueuedEnable.ValueRW = true;
+
             }
 
             // 每帧转向目标（在射程内持续瞄准）

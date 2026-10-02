@@ -29,9 +29,10 @@ partial struct UnitMoverSystem : ISystem
             EnabledRefRW<TargetPositionPathQueued> targetPositionPathQueuedEnable,
             RefRW <FlowFieldPathRequest> flowFieldPathRequest,
             EnabledRefRW<FlowFieldPathRequest> flowFieldPathRequestEnable,
+            EnabledRefRW<FlowFieldFollower> flowFieldFollowerEnable,
             RefRW <UnitMover> unitMover)
-           in SystemAPI.Query<RefRO<LocalTransform>, RefRW<TargetPositionPathQueued>, EnabledRefRW<TargetPositionPathQueued>, RefRW<FlowFieldPathRequest>, EnabledRefRW<FlowFieldPathRequest>, RefRW <UnitMover>>()
-           .WithPresent<FlowFieldPathRequest>())
+           in SystemAPI.Query<RefRO<LocalTransform>, RefRW<TargetPositionPathQueued>, EnabledRefRW<TargetPositionPathQueued>, RefRW<FlowFieldPathRequest>, EnabledRefRW<FlowFieldPathRequest>, EnabledRefRW<FlowFieldFollower>,RefRW <UnitMover>>()
+           .WithPresent<FlowFieldPathRequest,FlowFieldFollower>())
         {
 
             RaycastInput raycastInput  = new RaycastInput
@@ -48,6 +49,9 @@ partial struct UnitMoverSystem : ISystem
             if(!collisionWorld.CastRay(raycastInput))
             {
                 unitMover.ValueRW.m_TargetPosition = targetPositionPathQueued.ValueRO.m_TargetPosition;
+                flowFieldPathRequestEnable.ValueRW = false;
+                flowFieldFollowerEnable.ValueRW = false;
+
             }
             else
             {

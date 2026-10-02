@@ -17,8 +17,16 @@ partial struct MeleeAttackSystem : ISystem
         NativeList<RaycastHit> raycastHitList = new NativeList<RaycastHit>(Allocator.Temp);
 
 
-        foreach ((RefRW<LocalTransform> LocalTransform, RefRW<MeleeAttack> meleeAttack, RefRO<Target> target, RefRW<UnitMover> unitMover) in
-            SystemAPI.Query<RefRW<LocalTransform>, RefRW<MeleeAttack>, RefRO<Target>, RefRW<UnitMover>>().WithDisabled<MoveOverride>())
+        foreach ((RefRW<LocalTransform> LocalTransform,
+            RefRW<MeleeAttack> meleeAttack,
+            RefRO<Target> target,
+            RefRW<TargetPositionPathQueued> targetPositionPathQueued, 
+            EnabledRefRW<TargetPositionPathQueued> targetPositionPathQueuedEnable) in
+            SystemAPI.Query<RefRW<LocalTransform>,
+            RefRW<MeleeAttack>, 
+            RefRO<Target>, 
+            RefRW<TargetPositionPathQueued> ,
+            EnabledRefRW<TargetPositionPathQueued>>().WithDisabled<MoveOverride>().WithPresent<TargetPositionPathQueued>())
         {
             if (target.ValueRO.m_TargetEntity == Entity.Null)
             {
@@ -71,12 +79,14 @@ partial struct MeleeAttackSystem : ISystem
             if (!isCloseEnoughToAttack && !isTouchingTarget)
             {
                 // 目标不在攻击距离内，继续移动
-                unitMover.ValueRW.m_TargetPosition = targetLocalTransform.Position;
+                targetPositionPathQueued.ValueRW.m_TargetPosition = targetLocalTransform.Position;
+                targetPositionPathQueuedEnable.ValueRW = true;
             }
             else
             {
                 // 可以攻击
-                unitMover.ValueRW.m_TargetPosition = LocalTransform.ValueRO.Position;
+                targetPositionPathQueued.ValueRW.m_TargetPosition = LocalTransform.ValueRO.Position;
+                targetPositionPathQueuedEnable.ValueRW = true;
 
                 meleeAttack.ValueRW.m_Timer -= SystemAPI.Time.DeltaTime;
                 if (meleeAttack.ValueRO.m_Timer > 0)
