@@ -10,6 +10,7 @@ public partial struct GridSystem : ISystem
 {
 
     public const int WALL_COST = byte.MaxValue;
+    public const int HEAVY_COST = 50;
     public const int FLOW_FIELDMAP_COUNT = 100;
     public struct GridSystemData :IComponentData
     {
@@ -18,6 +19,8 @@ public partial struct GridSystem : ISystem
         public float m_GridNodeSize;
         public NativeArray<GridMap> m_GridMapArray;
         public int m_NextGridIndex;
+
+        public NativeArray<byte> m_CostMap;
 
     }
 
@@ -37,7 +40,7 @@ public partial struct GridSystem : ISystem
         /// Data
         /// </summary>
         public byte m_Cost;
-        public byte m_BestCost;
+        public int m_BestCost;
         public float2 m_Vector;
     }
 
@@ -95,6 +98,7 @@ public partial struct GridSystem : ISystem
             m_Height = height,
             m_GridNodeSize = gridNodeSize,
             m_GridMapArray = gridMapArray,
+            m_CostMap = new NativeArray<byte>(totalCount, Allocator.Persistent),
         });
 
 
@@ -137,7 +141,6 @@ public partial struct GridSystem : ISystem
             //选择一个单位都要重新计算流场，所以每次都要切换一个gridmap
             int gridIndex = gridSystemData.m_NextGridIndex;
             gridSystemData.m_NextGridIndex = (gridSystemData.m_NextGridIndex + 1) % FLOW_FIELDMAP_COUNT;
-            SystemAPI.SetComponent(state.SystemHandle, gridSystemData);
             //
 
             flowFieldFollower.ValueRW.m_GridIndex = gridIndex;
@@ -166,7 +169,7 @@ public partial struct GridSystem : ISystem
                     else
                     {
                         gridNode.ValueRW.m_Cost = 1;
-                        gridNode.ValueRW.m_BestCost = byte.MaxValue;
+                        gridNode.ValueRW.m_BestCost = int.MaxValue;
                     }
                 }
             }
@@ -192,6 +195,24 @@ public partial struct GridSystem : ISystem
                     {
                         int index = CalculateIndex(x, y, gridSystemData.m_Width);
                         gridNodeNativeArray[index].ValueRW.m_Cost = WALL_COST;
+                        gridSystemData.m_CostMap[index] = WALL_COST;
+                    }
+
+
+                    if (collisionWorld.OverlapSphere(
+                        GetWorldCenterPosition(x, y, gridSystemData.m_GridNodeSize),
+                        gridSystemData.m_GridNodeSize * .5f,
+                        ref distanceHitList, new CollisionFilter
+                        {
+                            BelongsTo = ~0u,
+                            CollidesWith = 1u << GameAssets.PATHFINDING_HEAVY,
+                            GroupIndex = 0,
+                        }))
+                    {
+                        int index = CalculateIndex(x, y, gridSystemData.m_Width);
+                        gridNodeNativeArray[index].ValueRW.m_Cost = HEAVY_COST;
+                        gridSystemData.m_CostMap[index] = HEAVY_COST;
+
                     }
                 }
             }
@@ -228,7 +249,7 @@ public partial struct GridSystem : ISystem
                         continue;
                     }
 
-                    byte newBestCost = (byte)(currentGridNode.ValueRO.m_BestCost + neighbourGridNode.ValueRO.m_Cost);
+                    int newBestCost = (currentGridNode.ValueRO.m_BestCost + neighbourGridNode.ValueRO.m_Cost);
 
                     if (newBestCost < neighbourGridNode.ValueRO.m_BestCost)
                     {
@@ -286,6 +307,7 @@ public partial struct GridSystem : ISystem
             gridSystemData.ValueRW.m_GridMapArray[i].m_GridEntityArray.Dispose();
         }
         gridSystemData.ValueRW.m_GridMapArray.Dispose();
+        gridSystemData.ValueRW.m_CostMap.Dispose();
     }
 
 
@@ -396,5 +418,17 @@ public partial struct GridSystem : ISystem
     public static bool IsWall(GridNode gridNode)
     {
         return gridNode.m_Cost == WALL_COST;
+    }
+
+    public static bool IsWall(int2 gridPosition,GridSystemData gridSystemData)
+    {
+        return gridSystemData.m_CostMap[CalculateIndex(gridPosition,gridSystemData.m_Width)] == WALL_COST;
+    }
+
+    public static bool IsValidWalkableGridPosition(float3 worldPosition,GridSystemData gridSystemData)
+    {
+        int2 gridPosition = GetGridPosition(worldPosition, gridSystemData.m_GridNodeSize);
+
+        return IsValidGridPosition(gridPosition, gridSystemData.m_Width, gridSystemData.m_Height) && !IsWall(gridPosition, gridSystemData);
     }
 }

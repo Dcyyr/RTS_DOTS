@@ -18,7 +18,7 @@ partial struct UnitMoverSystem : ISystem
 
     public void OnUpdate(ref SystemState state)
     {
-        GridSystem.GridSystemData gridSystem = SystemAPI.GetSingleton<GridSystem.GridSystemData>();
+        GridSystem.GridSystemData gridSystemData = SystemAPI.GetSingleton<GridSystem.GridSystemData>();
 
         PhysicsWorldSingleton physicsWorldSingleton = SystemAPI.GetSingleton<PhysicsWorldSingleton>();
         CollisionWorld collisionWorld = physicsWorldSingleton.CollisionWorld;
@@ -30,9 +30,10 @@ partial struct UnitMoverSystem : ISystem
             RefRW <FlowFieldPathRequest> flowFieldPathRequest,
             EnabledRefRW<FlowFieldPathRequest> flowFieldPathRequestEnable,
             EnabledRefRW<FlowFieldFollower> flowFieldFollowerEnable,
-            RefRW <UnitMover> unitMover)
+            RefRW <UnitMover> unitMover,
+            Entity entity)
            in SystemAPI.Query<RefRO<LocalTransform>, RefRW<TargetPositionPathQueued>, EnabledRefRW<TargetPositionPathQueued>, RefRW<FlowFieldPathRequest>, EnabledRefRW<FlowFieldPathRequest>, EnabledRefRW<FlowFieldFollower>,RefRW <UnitMover>>()
-           .WithPresent<FlowFieldPathRequest,FlowFieldFollower>())
+           .WithPresent<FlowFieldPathRequest,FlowFieldFollower>().WithEntityAccess())
         {
 
             RaycastInput raycastInput  = new RaycastInput
@@ -54,9 +55,21 @@ partial struct UnitMoverSystem : ISystem
 
             }
             else
-            {
-                flowFieldPathRequest.ValueRW.m_TargetPosition = targetPositionPathQueued.ValueRO.m_TargetPosition;
-                flowFieldPathRequestEnable.ValueRW = true;
+            {       
+                if(SystemAPI.HasComponent<MoveOverride>(entity))
+                {
+                    SystemAPI.SetComponentEnabled<MoveOverride>(entity,false);
+                }
+                if (GridSystem.IsValidWalkableGridPosition(targetPositionPathQueued.ValueRO.m_TargetPosition, gridSystemData))
+                {
+                    flowFieldPathRequest.ValueRW.m_TargetPosition = targetPositionPathQueued.ValueRO.m_TargetPosition;
+                    flowFieldPathRequestEnable.ValueRW = true;
+                }else
+                {
+                    unitMover.ValueRW.m_TargetPosition = localTransform.ValueRO.Position;
+                    flowFieldPathRequestEnable.ValueRW = false;
+                    flowFieldFollowerEnable.ValueRW = false;
+                }
             }
 
 
@@ -68,9 +81,9 @@ partial struct UnitMoverSystem : ISystem
             foreach ((RefRO<LocalTransform> localTransform ,RefRW<FlowFieldFollower> flowFieldFollower, EnabledRefRW<FlowFieldFollower> flowFieldFollowerEnable,RefRW < UnitMover> unitMover) 
             in SystemAPI.Query<RefRO<LocalTransform>,RefRW<FlowFieldFollower>, EnabledRefRW<FlowFieldFollower>,RefRW <UnitMover>>())
         {
-            int2 gridPosition = GridSystem.GetGridPosition(localTransform.ValueRO.Position, gridSystem.m_GridNodeSize);
-            int index = GridSystem.CalculateIndex(gridPosition, gridSystem.m_Width);
-            Entity gridSystemDataEntity = gridSystem.m_GridMapArray[flowFieldFollower.ValueRO.m_GridIndex].m_GridEntityArray[index];
+            int2 gridPosition = GridSystem.GetGridPosition(localTransform.ValueRO.Position, gridSystemData.m_GridNodeSize);
+            int index = GridSystem.CalculateIndex(gridPosition, gridSystemData.m_Width);
+            Entity gridSystemDataEntity = gridSystemData.m_GridMapArray[flowFieldFollower.ValueRO.m_GridIndex].m_GridEntityArray[index];
             GridSystem.GridNode gridNode = SystemAPI.GetComponent<GridSystem.GridNode>(gridSystemDataEntity);
 
             float3 gridNodeMoveVector = GridSystem.GetWorldMovementVector(gridNode.m_Vector);
@@ -84,11 +97,11 @@ partial struct UnitMoverSystem : ISystem
                 flowFieldFollower.ValueRW.m_LastMoveVector = gridNodeMoveVector;
             }
 
-            unitMover.ValueRW.m_TargetPosition = GridSystem.GetWorldCenterPosition(gridPosition.x, gridPosition.y, gridSystem.m_GridNodeSize)
+            unitMover.ValueRW.m_TargetPosition = GridSystem.GetWorldCenterPosition(gridPosition.x, gridPosition.y, gridSystemData.m_GridNodeSize)
                     + gridNodeMoveVector
-                    * (gridSystem.m_GridNodeSize * 1f);
+                    * (gridSystemData.m_GridNodeSize * 1f);
 
-            if(math.distance(localTransform.ValueRO.Position,flowFieldFollower.ValueRO.m_TargetPosition) < gridSystem.m_GridNodeSize)
+            if(math.distance(localTransform.ValueRO.Position,flowFieldFollower.ValueRO.m_TargetPosition) < gridSystemData.m_GridNodeSize)
             {
                 unitMover.ValueRW.m_TargetPosition = localTransform.ValueRO.Position;
                 flowFieldFollowerEnable.ValueRW = false;
