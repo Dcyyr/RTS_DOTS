@@ -15,9 +15,9 @@ TagManager:
   - Buildings
   - PathFindingWall
   - PathFindingHeavy
-  - 
-  - 
-  - 
+  - Minimap
+  - FogOfWar
+  - FogOfWarVisual
   - 
   - 
   - 

@@ -325,10 +325,10 @@
         "m_Expanded": true,
         "m_Position": {
             "serializedVersion": "2",
-            "x": -493.0694274902344,
-            "y": 60.015628814697269,
-            "width": 0.0,
-            "height": 0.0
+            "x": -457.0,
+            "y": 53.99998092651367,
+            "width": 208.00001525878907,
+            "height": 433.00006103515627
         }
     },
     "m_Slots": [
@@ -566,7 +566,7 @@
         "r": 0.0,
         "g": 0.0,
         "b": 0.0,
-        "a": 1.0
+        "a": 0.5529412031173706
     },
     "isMainColor": false,
     "m_ColorMode": 0
@@ -935,7 +935,7 @@
     "m_StageCapability": 3,
     "m_BareResource": false,
     "m_Texture": {
-        "m_SerializedTexture": "{\"texture\":{\"instanceID\":0}}",
+        "m_SerializedTexture": "",
         "m_Guid": ""
     },
     "m_DefaultType": 0
@@ -1116,13 +1116,13 @@
     "hlslDeclarationOverride": 0,
     "m_Hidden": false,
     "m_Value": {
-        "m_SerializedTexture": "{\"texture\":{\"fileID\":8400000,\"guid\":\"be8eefefbd57ff64da0b951f921c6a04\",\"type\":2}}",
+        "m_SerializedTexture": "{\"texture\":{\"fileID\":8400000,\"guid\":\"e6912782c1cd1e145b0deab314729276\",\"type\":2}}",
         "m_Guid": ""
     },
     "isMainTexture": false,
     "useTilingAndOffset": false,
     "m_Modifiable": true,
-    "m_DefaultType": 0
+    "m_DefaultType": 1
 }
 
 {
