@@ -1,11 +1,12 @@
-using Unity.Burst;
+﻿using Unity.Burst;
 using Unity.Entities;
 
 [UpdateInGroup(typeof(LateSimulationSystemGroup),OrderLast = true)]
 partial struct ResetEventsSystem : ISystem
 {
    
-    [BurstCompile]
+    // 注意：本系统要调用托管单例 DOTSEventsManager.instance，所以 OnUpdate 不能 Burst 编译
+    // （内部的 Reset*EventsJob 各自带 [BurstCompile]，依然并行编译，效率不受影响）
     public void OnUpdate(ref SystemState state)
     {
 

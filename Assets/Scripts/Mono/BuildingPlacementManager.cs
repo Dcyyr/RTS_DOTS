@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Physics;
@@ -60,7 +60,16 @@ public class BuildingPlacementManager : MonoBehaviour
 
                 EntitiesReferences entitiesRef = entityQuery.GetSingleton<EntitiesReferences>();
 
-                Entity entity = entityManager.Instantiate(m_BuildingTypeSO.GetPrefabEntity(entitiesRef));
+                // 先取预制体实体并检查有效性：没赋值时明确报出是哪个建筑类型，而不是抛 "invalid entity"
+                Entity buildingPrefabEntity = m_BuildingTypeSO.GetPrefabEntity(entitiesRef);
+                if (buildingPrefabEntity == Entity.Null)
+                {
+                    Debug.LogWarning($"BuildingPlacementManager: 建筑类型 [{m_BuildingTypeSO.m_BuildingType}] 对应的预制体" +
+                        " 在 EntitiesReferences 上没有赋值！请到挂 EntitiesReferencesAuthoring 的物体上把对应预制体拖进去。");
+                    return;
+                }
+
+                Entity entity = entityManager.Instantiate(buildingPrefabEntity);
                 entityManager.SetComponentData(entity, LocalTransform.FromPosition(mouseWorldPosition));
             }
 
@@ -80,20 +89,76 @@ public class BuildingPlacementManager : MonoBehaviour
         CollisionFilter collisionFilter = new CollisionFilter
         {
             BelongsTo = ~0u,
-            CollidesWith = 1u << GameAssets.BUILDINGS_LAYER,
+            CollidesWith = 1u << GameAssets.BUILDINGS_LAYER ,
+            GroupIndex = 0,
+        };
+
+        // 资源点(ResourcesNode*)的碰撞体在 PATHFINDING_WALL 层(8)，所以"找附近资源点"必须用单独的过滤器
+        CollisionFilter resourceNodeFilter = new CollisionFilter
+        {
+            BelongsTo = ~0u,
+            CollidesWith = 1u << GameAssets.PATHFINDING_WALL,
             GroupIndex = 0,
         };
 
 
         UnityEngine.BoxCollider boxCollider = m_BuildingTypeSO.m_Prefab.GetComponent<UnityEngine.BoxCollider>();
+        if (boxCollider == null)
+        {   // 碰撞体挂在子物体上时也能取到，避免空引用
+            boxCollider = m_BuildingTypeSO.m_Prefab.GetComponentInChildren<UnityEngine.BoxCollider>();
+        }
 
-        float halfExtents = 2f;
-        NativeList<DistanceHit> hitDistance = new NativeList<DistanceHit>(Allocator.Temp);
-        if (collisionWorld.OverlapBox(mouseWorldPosition, Quaternion.identity, boxCollider.size * halfExtents, ref hitDistance, collisionFilter))
+        float halfExtents = 0.5f;   // OverlapBox 的第三个参数是【半尺寸】
+        NativeList<DistanceHit> hitDistanceList = new NativeList<DistanceHit>(Allocator.Temp);
+        if (collisionWorld.OverlapBox(mouseWorldPosition, Quaternion.identity, boxCollider.size * halfExtents, ref hitDistanceList, collisionFilter))
         {
             //此处不能放建筑
             return false;
         }
+        hitDistanceList.Clear();
+
+        if(collisionWorld.OverlapSphere(mouseWorldPosition,m_BuildingTypeSO.m_BuildingDistanceMin,ref hitDistanceList,collisionFilter))
+        {
+            foreach(DistanceHit distanceHit in hitDistanceList)
+            {
+                BuildingTypeSOSet buildingTypeSOSet = entityManager.GetComponentData<BuildingTypeSOSet>(distanceHit.Entity);
+                if(buildingTypeSOSet.m_BuildingType == m_BuildingTypeSO.m_BuildingType)
+                {
+                    return false;
+                }
+            }
+        }
+
+        if (m_BuildingTypeSO is BuildingResourceHarversterTypeSO buildingResourceHarversterTypeSO)
+        {
+            bool hasVaildNearbyResourceNodes = false;
+            if(collisionWorld.OverlapSphere(
+                mouseWorldPosition,
+                buildingResourceHarversterTypeSO.m_HarverstDistance,
+                ref hitDistanceList,
+                resourceNodeFilter))
+            {
+                foreach(DistanceHit distanceHit in hitDistanceList)
+                {
+                    if(entityManager.HasComponent<ResourceTypeSOSet>(distanceHit.Entity))
+                    {
+                        ResourceTypeSOSet resourceTypeSOSet = entityManager.GetComponentData<ResourceTypeSOSet>(distanceHit.Entity);
+                        if (resourceTypeSOSet.m_ResourceType == buildingResourceHarversterTypeSO.m_HarverstableResourceType)
+                        {
+                            hasVaildNearbyResourceNodes = true;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if(!hasVaildNearbyResourceNodes)
+            {
+                return false;
+            }
+        }
+
+
 
         return true;
 

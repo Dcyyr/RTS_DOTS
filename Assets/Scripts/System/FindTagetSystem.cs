@@ -1,4 +1,4 @@
-﻿﻿using Unity.Burst;
+﻿﻿﻿using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
@@ -53,10 +53,21 @@ partial struct FindTargetSystem : ISystem
             float currentTargetDistance = 0f;
             if(target.ValueRO.m_TargetEntity != Entity.Null)
             {
-                closestTargetEntity = target.ValueRO.m_TargetEntity;
-                LocalTransform targetLocalTransform = SystemAPI.GetComponent<LocalTransform>(target.ValueRO.m_TargetEntity);
-                closestTargetDistance = math.distance(localTransform.ValueRO.Position, targetLocalTransform.Position);
-                currentTargetDistance = 2f;
+                // 目标可能是已销毁实体，或是不带 LocalTransform 的静态碰撞体实体（例如建筑的碰撞体）
+                // → 直接清掉目标，下一帧重新寻找，避免抛异常
+                if (!SystemAPI.Exists(target.ValueRO.m_TargetEntity) ||
+                    !SystemAPI.HasComponent<LocalTransform>(target.ValueRO.m_TargetEntity))
+                {
+                    target.ValueRW.m_TargetEntity = Entity.Null;
+                    closestTargetEntity = Entity.Null;
+                }
+                else
+                {
+                    closestTargetEntity = target.ValueRO.m_TargetEntity;
+                    LocalTransform targetLocalTransform = SystemAPI.GetComponent<LocalTransform>(target.ValueRO.m_TargetEntity);
+                    closestTargetDistance = math.distance(localTransform.ValueRO.Position, targetLocalTransform.Position);
+                    currentTargetDistance = 2f;
+                }
             }
 
             if (collisionWorld.OverlapSphere(localTransform.ValueRO.Position, findTarget.ValueRO.m_Range, ref distanceHitsList, collisionFilter))
@@ -64,7 +75,9 @@ partial struct FindTargetSystem : ISystem
                 foreach (DistanceHit distanceHit in distanceHitsList)
                 {
                     // 命中的实体可能没有 Unit 组件，先判断再读取，避免异常
-                    if (!SystemAPI.Exists(distanceHit.Entity) || !SystemAPI.HasComponent<Faction>(distanceHit.Entity))
+                    if (!SystemAPI.Exists(distanceHit.Entity) ||
+                        !SystemAPI.HasComponent<Faction>(distanceHit.Entity) ||
+                        !SystemAPI.HasComponent<LocalTransform>(distanceHit.Entity))
                     {
                         continue;
                     }

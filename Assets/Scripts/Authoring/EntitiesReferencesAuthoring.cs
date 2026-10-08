@@ -12,6 +12,10 @@ public class EntitiesReferencesAuthoring : MonoBehaviour
 
     public GameObject m_BuildingTowerPrefab;
     public GameObject m_BuildingBarracksPrefab;
+    public GameObject m_BuilindGoldHarverserPrefab;
+    public GameObject m_BuilindIronHarverserPrefab;
+    public GameObject m_BuilindOilHarverserPrefab;
+
     public class Baker : Baker<EntitiesReferencesAuthoring>
     {
         public override void Bake(EntitiesReferencesAuthoring authoring)
@@ -28,7 +32,9 @@ public class EntitiesReferencesAuthoring : MonoBehaviour
                 m_BuildingTowerPrefab = GetEntity(authoring.m_BuildingTowerPrefab, TransformUsageFlags.Dynamic),
                 m_BuildingBarracksPrefab = GetEntity(authoring.m_BuildingBarracksPrefab, TransformUsageFlags.Dynamic),
 
-
+                m_BuilindGoldHarverserPrefab = GetEntity(authoring.m_BuilindGoldHarverserPrefab, TransformUsageFlags.Dynamic),
+                m_BuilindIronHarverserPrefab = GetEntity(authoring.m_BuilindIronHarverserPrefab, TransformUsageFlags.Dynamic),
+                m_BuilindOilHarverserPrefab = GetEntity(authoring.m_BuilindOilHarverserPrefab, TransformUsageFlags.Dynamic),
             });
         }
         
@@ -46,5 +52,8 @@ public struct EntitiesReferences : IComponentData
 
     public Entity m_BuildingTowerPrefab;
     public Entity m_BuildingBarracksPrefab;
+    public Entity m_BuilindGoldHarverserPrefab;
+    public Entity m_BuilindIronHarverserPrefab;
+    public Entity m_BuilindOilHarverserPrefab;
 }
 

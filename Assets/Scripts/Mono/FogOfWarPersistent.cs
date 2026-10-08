@@ -11,7 +11,6 @@ public class FogOfWarPersistent : MonoBehaviour
     [SerializeField]
     private Material m_FogOfWarPersistentMaterial;
 
-    private bool m_IsValid;
 
     private void Start()
     {

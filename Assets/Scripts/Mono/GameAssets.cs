@@ -3,6 +3,7 @@ using UnityEngine;
 public class GameAssets : MonoBehaviour
 {
     public static GameAssets Instance { get; private set; }
+    public const int DEFAULT_LAYER = 0;
 
     public const int UNITS_LAYER = 6;
     public const int BUILDINGS_LAYER = 7;
