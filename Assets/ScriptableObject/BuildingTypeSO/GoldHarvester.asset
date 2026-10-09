@@ -15,6 +15,8 @@ MonoBehaviour:
   m_BuildingType: 5
   m_Prefab: {fileID: 5990804717148296718, guid: 9ce93e5e0e8d11542a80b1066a54055e, type: 3}
   m_BuildingDistanceMin: 10
+  m_BuildingConstrutionTimerMax: 5
+  m_ConstructionYOffset: -7.4
   m_BuilingCostResourceAmountArray:
   - m_ResourceType: 2
     m_Amount: 30

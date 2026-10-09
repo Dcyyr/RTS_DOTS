@@ -99,7 +99,7 @@ partial struct FindTargetSystem : ISystem
                         }
 
                         target.ValueRW.m_TargetEntity = distanceHit.Entity;
-                        UnityEngine.Debug.Log("Find Target");
+                        //UnityEngine.Debug.Log("Find Target");
                         break;
                     }
                     

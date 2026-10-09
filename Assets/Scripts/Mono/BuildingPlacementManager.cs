@@ -1,10 +1,12 @@
-using System;
+﻿using System;
 using Unity.Collections;
 using Unity.Entities;
+using Unity.Mathematics;
 using Unity.Physics;
 using Unity.Transforms;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using static BuildingTypeSO;
 
 public class BuildingPlacementManager : MonoBehaviour
 {
@@ -64,14 +66,32 @@ public class BuildingPlacementManager : MonoBehaviour
                     EntitiesReferences entitiesRef = entityQuery.GetSingleton<EntitiesReferences>();
 
                     // 先取预制体实体并检查有效性：没赋值时明确报出是哪个建筑类型，而不是抛 "invalid entity"
-                    Entity buildingPrefabEntity = m_BuildingTypeSO.GetPrefabEntity(entitiesRef);
-                    if (buildingPrefabEntity == Entity.Null)
-                    {
-                        return;
-                    }
+                    //Entity buildingPrefabEntity = m_BuildingTypeSO.GetPrefabEntity(entitiesRef);
+                    //if (buildingPrefabEntity == Entity.Null)
+                    //{
+                    //    return;
+                    //}
+                    Entity constructionVisualEntity = entityManager.Instantiate(m_BuildingTypeSO.GetVisualPrefabEntity(entitiesRef));
+                    entityManager.SetComponentData(constructionVisualEntity, LocalTransform.FromPosition(mouseWorldPosition));
 
-                    Entity entity = entityManager.Instantiate(buildingPrefabEntity);
-                    entityManager.SetComponentData(entity, LocalTransform.FromPosition(mouseWorldPosition));
+                    Entity constructionEntity = entityManager.Instantiate(entitiesRef.m_BuilindConstructionPrefab);
+                    entityManager.SetComponentData(constructionEntity, LocalTransform.FromPosition(mouseWorldPosition));
+                    entityManager.SetComponentData(constructionEntity, new BuildingConstruction
+                    {
+                        m_BuildingType = m_BuildingTypeSO.m_BuildingType,
+                        m_ConstructionTimer = 0,
+                        m_ConstructionTimerMax = m_BuildingTypeSO.m_BuildingConstrutionTimerMax,
+                        // 要取【真正的建筑预制体】(带 Health/Faction/收割等组件)；
+                        // 原来写的是 GetVisualPrefabEntity(纯外观)，建成后的建筑会没有功能
+                        m_FinalPrefabEntity = m_BuildingTypeSO.GetPrefabEntity(entitiesRef),
+                        m_VisualEntity = constructionVisualEntity,
+
+                        m_StartPosition = mouseWorldPosition + new Vector3(0, m_BuildingTypeSO.m_ConstructionYOffset, 0),
+                        m_EndPosition = mouseWorldPosition,
+
+                    });
+
+
                 }
             }
 
@@ -130,6 +150,37 @@ public class BuildingPlacementManager : MonoBehaviour
                 }
             }
         }
+        hitDistanceList.Clear();
+        if (collisionWorld.OverlapSphere(
+            mouseWorldPosition,
+            m_BuildingTypeSO.m_BuildingDistanceMin,
+            ref hitDistanceList,
+            collisionFilter))
+        {
+            // Hit something within building radius
+            foreach (DistanceHit distanceHit in hitDistanceList)
+            {
+                if (entityManager.HasComponent<BuildingTypeSOSet>(distanceHit.Entity))
+                {
+                    BuildingTypeSOSet buildingTypeSOHolder = entityManager.GetComponentData<BuildingTypeSOSet>(distanceHit.Entity);
+                    if (buildingTypeSOHolder.m_BuildingType == m_BuildingTypeSO.m_BuildingType)
+                    {
+                        // Same type too close
+                        return false;
+                    }
+                }
+                if (entityManager.HasComponent<BuildingConstruction>(distanceHit.Entity))
+                {
+                    BuildingConstruction buildingConstruction = entityManager.GetComponentData<BuildingConstruction>(distanceHit.Entity);
+                    if (buildingConstruction.m_BuildingType == m_BuildingTypeSO.m_BuildingType)
+                    {
+                        // Same type too close
+                        return false;
+                    }
+                }
+            }
+        }
+
 
         if (m_BuildingTypeSO is BuildingResourceHarversterTypeSO buildingResourceHarversterTypeSO)
         {

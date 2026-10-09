@@ -19,6 +19,13 @@ partial struct HealthDeadTestSystem : ISystem
             {
                 health.ValueRW.m_Dead = true;
                 entityCommandBuffer.DestroyEntity(entity);
+
+                if(SystemAPI.HasComponent<BuildingConstruction>(entity))
+                {
+                    BuildingConstruction buildingConstruction = SystemAPI.GetComponent<BuildingConstruction>(entity);
+                    entityCommandBuffer.DestroyEntity(buildingConstruction.m_VisualEntity);
+                }
+
             }
         }
 

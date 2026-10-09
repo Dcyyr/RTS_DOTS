@@ -18,6 +18,9 @@ public class BuildingTypeSO : ScriptableObject
     public BuildingType m_BuildingType;
     public Transform m_Prefab;
     public float m_BuildingDistanceMin;
+    public float m_BuildingConstrutionTimerMax;
+    public float m_ConstructionYOffset;
+
     public ResourceAmount[] m_BuilingCostResourceAmountArray;
 
     public bool m_ShowInBuildingPlacementManagerUI;
@@ -41,6 +44,20 @@ public class BuildingTypeSO : ScriptableObject
             case BuildingType.GoldHarvester: return entitiesReference.m_BuilindGoldHarverserPrefab;
             case BuildingType.IronHarvester: return entitiesReference.m_BuilindIronHarverserPrefab;
             case BuildingType.OilHarvester:  return entitiesReference.m_BuilindOilHarverserPrefab;
+        }
+    }
+
+    public Entity GetVisualPrefabEntity(EntitiesReferences entitiesReference)
+    {
+        switch (m_BuildingType)
+        {
+            default:
+            case BuildingType.None:
+            case BuildingType.Tower:            return entitiesReference.m_BuildingTowerVisualPrefab;
+            case BuildingType.Barracks:         return entitiesReference.m_BuildingBarracksVisualPrefab;
+            case BuildingType.GoldHarvester:    return entitiesReference.m_BuilindGoldHarverserVisualPrefab;
+            case BuildingType.IronHarvester:    return entitiesReference.m_BuilindIronHarverserVisualPrefab;
+            case BuildingType.OilHarvester:     return entitiesReference.m_BuilindOilHarverserVisualPrefab;
         }
     }
 }

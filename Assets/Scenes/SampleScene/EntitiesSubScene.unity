@@ -848,6 +848,12 @@ MonoBehaviour:
   m_BuilindGoldHarverserPrefab: {fileID: 708028168508492279, guid: 9ce93e5e0e8d11542a80b1066a54055e, type: 3}
   m_BuilindIronHarverserPrefab: {fileID: 989650895080763721, guid: 4a5154ce8e633f641b1f1bbfc07fa732, type: 3}
   m_BuilindOilHarverserPrefab: {fileID: 8239162191022057299, guid: d8677531d57cd18429e3b2d7104c57d0, type: 3}
+  m_BuildingTowerVisualPrefab: {fileID: 4812108824670253901, guid: 7af3dd2ce6f97554eb31b5bb6a88fb1a, type: 3}
+  m_BuildingBarracksVisualPrefab: {fileID: 2253483237653702904, guid: 3b1ec7dc3f3255d4a823d9f1a7d23cdf, type: 3}
+  m_BuilindGoldHarverserVisualPrefab: {fileID: 4499998760003975059, guid: 7120856548762cd46984ae2c0f231db9, type: 3}
+  m_BuilindIronHarverserVisualPrefab: {fileID: 184314028090552627, guid: c5d37c3d78a4a16478b068423c2b49f7, type: 3}
+  m_BuilindOilHarverserVisualPrefab: {fileID: 4785703203425898357, guid: 78a00498be0f05d4c9dd4e6d454a40f3, type: 3}
+  m_BuilindConstructionPrefab: {fileID: 1208624779422900800, guid: 289fb33d8d710ed4189acdbb1cae6f78, type: 3}
 --- !u!4 &1902850699
 Transform:
   m_ObjectHideFlags: 0
