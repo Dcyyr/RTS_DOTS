@@ -51,26 +51,28 @@ public class BuildingPlacementManager : MonoBehaviour
 
         if (Input.GetMouseButtonDown(0))
         {
-            if (CanPlaceBuilding())
+            if (ResourceManager.Instance.CanSpendResourceAmount(m_BuildingTypeSO.m_BuilingCostResourceAmountArray))
             {
-                Vector3 mouseWorldPosition = MouseWorldPosition.Instance.GetPosition();
-                EntityManager entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
-
-                EntityQuery entityQuery = entityManager.CreateEntityQuery(typeof(EntitiesReferences));
-
-                EntitiesReferences entitiesRef = entityQuery.GetSingleton<EntitiesReferences>();
-
-                // 先取预制体实体并检查有效性：没赋值时明确报出是哪个建筑类型，而不是抛 "invalid entity"
-                Entity buildingPrefabEntity = m_BuildingTypeSO.GetPrefabEntity(entitiesRef);
-                if (buildingPrefabEntity == Entity.Null)
+                if (CanPlaceBuilding())
                 {
-                    Debug.LogWarning($"BuildingPlacementManager: 建筑类型 [{m_BuildingTypeSO.m_BuildingType}] 对应的预制体" +
-                        " 在 EntitiesReferences 上没有赋值！请到挂 EntitiesReferencesAuthoring 的物体上把对应预制体拖进去。");
-                    return;
-                }
+                    ResourceManager.Instance.SpendResourceAmount(m_BuildingTypeSO.m_BuilingCostResourceAmountArray);
+                    Vector3 mouseWorldPosition = MouseWorldPosition.Instance.GetPosition();
+                    EntityManager entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
 
-                Entity entity = entityManager.Instantiate(buildingPrefabEntity);
-                entityManager.SetComponentData(entity, LocalTransform.FromPosition(mouseWorldPosition));
+                    EntityQuery entityQuery = entityManager.CreateEntityQuery(typeof(EntitiesReferences));
+
+                    EntitiesReferences entitiesRef = entityQuery.GetSingleton<EntitiesReferences>();
+
+                    // 先取预制体实体并检查有效性：没赋值时明确报出是哪个建筑类型，而不是抛 "invalid entity"
+                    Entity buildingPrefabEntity = m_BuildingTypeSO.GetPrefabEntity(entitiesRef);
+                    if (buildingPrefabEntity == Entity.Null)
+                    {
+                        return;
+                    }
+
+                    Entity entity = entityManager.Instantiate(buildingPrefabEntity);
+                    entityManager.SetComponentData(entity, LocalTransform.FromPosition(mouseWorldPosition));
+                }
             }
 
         }

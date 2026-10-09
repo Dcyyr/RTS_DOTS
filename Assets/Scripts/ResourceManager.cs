@@ -27,6 +27,11 @@ public class ResourceManager : MonoBehaviour
         {   //初始化
             m_ResourceTypeAmountDictionary[resourceTypeSO.m_ResourceType] = 0;
         }
+
+        AddResourceAmount(ResourceTypeSO.ResourceType.Gold, 200);
+        AddResourceAmount(ResourceTypeSO.ResourceType.Iron, 150);
+        AddResourceAmount(ResourceTypeSO.ResourceType.Oil, 50);
+
     }
 
     public void AddResourceAmount(ResourceTypeSO.ResourceType resourceTypeSO,int amount)
@@ -48,5 +53,40 @@ public class ResourceManager : MonoBehaviour
             return 0;
         }
         return m_ResourceTypeAmountDictionary[resourceTypeSO];
+    }
+
+    public bool CanSpendResourceAmount(ResourceAmount resourceAmount)
+    {
+        return m_ResourceTypeAmountDictionary[resourceAmount.m_ResourceType] >= resourceAmount.m_Amount;
+    }
+
+    public bool CanSpendResourceAmount(ResourceAmount[] resourceAmountArray)
+    {
+        foreach (ResourceAmount resourceAmount in resourceAmountArray)
+        {
+            if(m_ResourceTypeAmountDictionary[resourceAmount.m_ResourceType] < resourceAmount.m_Amount)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    public void SpendResourceAmount(ResourceAmount resourceAmount)
+    {
+        m_ResourceTypeAmountDictionary[resourceAmount.m_ResourceType] -= resourceAmount.m_Amount;
+        OnResourceAmountChanged?.Invoke(this, EventArgs.Empty);
+    }
+
+
+    public void SpendResourceAmount(ResourceAmount[] resourceAmountArray)
+    {
+        foreach(ResourceAmount resourceAmount in resourceAmountArray)
+        {
+            m_ResourceTypeAmountDictionary[resourceAmount.m_ResourceType] -= resourceAmount.m_Amount;
+
+        }
+        OnResourceAmountChanged?.Invoke(this, EventArgs.Empty);
     }
 }

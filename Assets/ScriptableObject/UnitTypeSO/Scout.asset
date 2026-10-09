@@ -15,3 +15,6 @@ MonoBehaviour:
   m_UnitType: 2
   m_ProgressMax: 2
   m_Sprite: {fileID: 21300000, guid: 7e5af9f6e92c6974baebe192ce185e5e, type: 3}
+  m_UnitCostAmountArray:
+  - m_ResourceType: 1
+    m_Amount: 20

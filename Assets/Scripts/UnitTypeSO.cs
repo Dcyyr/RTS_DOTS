@@ -15,7 +15,7 @@ public class UnitTypeSO : ScriptableObject
 
     public float m_ProgressMax;
     public Sprite m_Sprite;
-
+    public ResourceAmount[] m_UnitCostAmountArray;
     public Entity GetPrefabEntities(EntitiesReferences entitiesReference)
     {
         switch(m_UnitType)

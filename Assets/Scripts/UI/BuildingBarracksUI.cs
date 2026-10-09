@@ -25,6 +25,13 @@ public class BuildingBarracksUI : MonoBehaviour
 
         m_SoldierButton.onClick.AddListener(() =>
         {
+            UnitTypeSO unitTypeSO = GameAssets.Instance.m_UnitTypeSOList.GetUnitTypeSO(UnitTypeSO.UnitType.Soldier);
+            if(!ResourceManager.Instance.CanSpendResourceAmount(unitTypeSO.m_UnitCostAmountArray))
+            {
+                return;
+            }
+            ResourceManager.Instance.SpendResourceAmount(unitTypeSO.m_UnitCostAmountArray);
+
 
             DynamicBuffer<SpawnUnitTypeBuffer> spawnUnitTypeBuffer = m_EntityManager.GetBuffer<SpawnUnitTypeBuffer>(m_BarracksEntity, false);
             spawnUnitTypeBuffer.Add(new SpawnUnitTypeBuffer
@@ -35,6 +42,12 @@ public class BuildingBarracksUI : MonoBehaviour
 
         m_ScoutButton.onClick.AddListener(() =>
         {
+            UnitTypeSO unitTypeSO = GameAssets.Instance.m_UnitTypeSOList.GetUnitTypeSO(UnitTypeSO.UnitType.Scout);
+            if (!ResourceManager.Instance.CanSpendResourceAmount(unitTypeSO.m_UnitCostAmountArray))
+            {
+                return;
+            }
+            ResourceManager.Instance.SpendResourceAmount(unitTypeSO.m_UnitCostAmountArray);
 
             DynamicBuffer<SpawnUnitTypeBuffer> spawnUnitTypeBuffer = m_EntityManager.GetBuffer<SpawnUnitTypeBuffer>(m_BarracksEntity, false);
             spawnUnitTypeBuffer.Add(new SpawnUnitTypeBuffer

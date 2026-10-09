@@ -14,11 +14,11 @@ public class BuildingTypeSO : ScriptableObject
         IronHarvester,
         OilHarvester,
     }
-
+    
     public BuildingType m_BuildingType;
     public Transform m_Prefab;
     public float m_BuildingDistanceMin;
-
+    public ResourceAmount[] m_BuilingCostResourceAmountArray;
 
     public bool m_ShowInBuildingPlacementManagerUI;
     public Sprite m_Sprite;

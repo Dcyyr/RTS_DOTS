@@ -15,6 +15,9 @@ MonoBehaviour:
   m_BuildingType: 7
   m_Prefab: {fileID: 3271452808444847384, guid: d8677531d57cd18429e3b2d7104c57d0, type: 3}
   m_BuildingDistanceMin: 10
+  m_BuilingCostResourceAmountArray:
+  - m_ResourceType: 1
+    m_Amount: 35
   m_ShowInBuildingPlacementManagerUI: 1
   m_Sprite: {fileID: 21300000, guid: 2c6c8a5b84bda9d4580c4d46edf40dce, type: 3}
   m_VisualPrefab: {fileID: 8278809462145260686, guid: 78a00498be0f05d4c9dd4e6d454a40f3, type: 3}
